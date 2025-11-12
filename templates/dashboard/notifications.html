@@ -1,0 +1,732 @@
+{% extends 'base.html' %}
+
+{% block title %}Notifications - VictorLoans{% endblock %}
+
+{% block content %}
+<div class="container-fluid notifications-container">
+    <!-- Header Section -->
+    <div class="notifications-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center">
+                    <div class="header-icon me-3">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div>
+                        <h1 class="page-title">Notifications</h1>
+                        <p class="page-subtitle">Stay updated with your loan applications and account activities</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="header-stats">
+                    <div class="stat-badge">
+                        <span class="stat-number">{{ unread_count }}</span>
+                        <span class="stat-label">Unread</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10">
+            <!-- Notifications Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="card-title">
+                            <i class="fas fa-bell me-2"></i>
+                            All Notifications
+                        </h3>
+                        {% if notifications %}
+                        <form method="post" action="{% url 'notifications' %}" class="mark-all-form">
+                            {% csrf_token %}
+                            <button type="submit" name="mark_all_read" class="btn btn-sm mark-all-btn">
+                                <i class="fas fa-check-double me-2"></i>Mark All as Read
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if notifications %}
+                        <div class="notifications-list">
+                            {% for notification in notifications %}
+                            <div class="notification-item {% if not notification.is_read %}unread{% endif %}">
+                                <div class="notification-icon">
+                                    <i class="fas 
+                                        {% if notification.notification_type == 'application_update' %}fa-file-alt
+                                        {% elif notification.notification_type == 'payment_reminder' %}fa-credit-card
+                                        {% elif notification.notification_type == 'loan_approved' %}fa-check-circle
+                                        {% elif notification.notification_type == 'loan_rejected' %}fa-times-circle
+                                        {% elif notification.notification_type == 'system' %}fa-cog
+                                        {% else %}fa-bell{% endif %}">
+                                    </i>
+                                </div>
+                                <div class="notification-content">
+                                    <div class="notification-header">
+                                        <h6 class="notification-title">
+                                            {{ notification.title }}
+                                            {% if not notification.is_read %}
+                                            <span class="unread-badge">New</span>
+                                            {% endif %}
+                                        </h6>
+                                        <span class="notification-time">{{ notification.created_at|timesince }} ago</span>
+                                    </div>
+                                    <p class="notification-message">{{ notification.message }}</p>
+                                    <div class="notification-footer">
+                                        <span class="notification-type">
+                                            <i class="fas fa-tag me-1"></i>
+                                            {{ notification.get_notification_type_display }}
+                                        </span>
+                                        <div class="notification-actions">
+                                            {% if not notification.is_read %}
+                                            <form method="post" action="{% url 'notifications' %}" class="d-inline">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="notification_id" value="{{ notification.id }}">
+                                                <button type="submit" name="mark_read" class="btn btn-sm mark-read-btn">
+                                                    <i class="fas fa-check me-1"></i>Mark as Read
+                                                </button>
+                                            </form>
+                                            {% else %}
+                                            <span class="read-status">
+                                                <i class="fas fa-check-circle me-1"></i>Read
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Pagination -->
+                        {% if page_obj.has_other_pages %}
+                        <div class="pagination-container">
+                            <div class="pagination-info">
+                                Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} notifications
+                            </div>
+                            <nav class="pagination-nav">
+                                <ul class="pagination">
+                                    {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                    {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </span>
+                                    </li>
+                                    {% endif %}
+
+                                    {% for num in page_obj.paginator.page_range %}
+                                        {% if page_obj.number == num %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ num }}</span>
+                                        </li>
+                                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                        </li>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                    {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </span>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        </div>
+                        {% endif %}
+                    {% else %}
+                        <!-- Empty State -->
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-bell-slash"></i>
+                            </div>
+                            <h4>No Notifications</h4>
+                            <p>You're all caught up! There are no notifications to display at the moment.</p>
+                            <div class="empty-actions">
+                                <a href="{% url 'dashboard' %}" class="btn btn-primary me-2">
+                                    <i class="fas fa-home me-2"></i>Back to Dashboard
+                                </a>
+                                <a href="{% url 'loan_list' %}" class="btn btn-outline">
+                                    <i class="fas fa-hand-holding-usd me-2"></i>Apply for Loan
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Bitget Theme Variables */
+:root {
+    --bg-primary: #0B0E11;
+    --bg-secondary: #1E2026;
+    --bg-tertiary: #2B2F36;
+    --border-color: #474D57;
+    --text-primary: #EAECEF;
+    --text-secondary: #B7BDC6;
+    --text-muted: #848E9C;
+    --accent-green: #00C087;
+    --accent-green-hover: #00A875;
+    --accent-yellow: #F0B90B;
+    --accent-red: #F6465D;
+    --accent-blue: #0095FF;
+}
+
+.notifications-container {
+    padding: 20px;
+    background: var(--bg-primary);
+    min-height: 100vh;
+}
+
+/* Header Styles */
+.notifications-header {
+    padding: 20px 0;
+}
+
+.header-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--accent-green);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-primary);
+    font-size: 1.2rem;
+}
+
+.page-title {
+    color: var(--text-primary);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.page-subtitle {
+    color: var(--text-muted);
+    margin: 5px 0 0 0;
+    font-size: 0.9rem;
+}
+
+.header-stats {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.stat-badge {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 16px;
+    text-align: center;
+    min-width: 100px;
+}
+
+.stat-number {
+    display: block;
+    color: var(--accent-green);
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.stat-label {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+/* Dashboard Card */
+.dashboard-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-title {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+/* Mark All Button */
+.mark-all-form {
+    margin: 0;
+}
+
+.mark-all-btn {
+    background: var(--accent-green);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.mark-all-btn:hover {
+    background: var(--accent-green-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 192, 135, 0.3);
+}
+
+/* Notifications List */
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.notification-item {
+    display: flex;
+    gap: 15px;
+    padding: 20px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.notification-item.unread {
+    background: rgba(0, 192, 135, 0.05);
+    border-color: rgba(0, 192, 135, 0.3);
+    border-left: 4px solid var(--accent-green);
+}
+
+.notification-item:hover {
+    border-color: var(--accent-green);
+    transform: translateX(5px);
+}
+
+.notification-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-green);
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.notification-item.unread .notification-icon {
+    background: var(--accent-green);
+    color: var(--bg-primary);
+}
+
+.notification-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.notification-title {
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.unread-badge {
+    background: var(--accent-green);
+    color: var(--bg-primary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.notification-time {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    white-space: nowrap;
+    margin-left: 10px;
+}
+
+.notification-message {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin: 0 0 12px 0;
+}
+
+.notification-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notification-type {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+}
+
+.notification-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mark-read-btn {
+    background: transparent;
+    border: 1px solid var(--accent-green);
+    color: var(--accent-green);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.mark-read-btn:hover {
+    background: var(--accent-green);
+    color: var(--bg-primary);
+    transform: translateY(-1px);
+}
+
+.read-status {
+    color: var(--accent-green);
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+/* Pagination */
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.pagination-info {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.pagination-nav {
+    display: flex;
+    align-items: center;
+}
+
+.pagination {
+    margin: 0;
+    gap: 5px;
+}
+
+.page-item .page-link {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    border-radius: 6px;
+    padding: 8px 12px;
+    min-width: 40px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.page-item .page-link:hover {
+    background: var(--accent-green);
+    border-color: var(--accent-green);
+    color: var(--bg-primary);
+}
+
+.page-item.active .page-link {
+    background: var(--accent-green);
+    border-color: var(--accent-green);
+    color: var(--bg-primary);
+}
+
+.page-item.disabled .page-link {
+    background: var(--bg-tertiary);
+    border-color: var(--border-color);
+    color: var(--text-muted);
+    opacity: 0.5;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--bg-tertiary);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 2rem;
+    margin: 0 auto 20px;
+}
+
+.empty-state h4 {
+    color: var(--text-primary);
+    margin: 0 0 10px 0;
+    font-size: 1.3rem;
+}
+
+.empty-state p {
+    color: var(--text-muted);
+    margin: 0 0 25px 0;
+    font-size: 0.95rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.empty-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Button Styles */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 10px 20px;
+    border: none;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-primary {
+    background: var(--accent-green);
+    color: var(--bg-primary);
+}
+
+.btn-primary:hover {
+    background: var(--accent-green-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 192, 135, 0.3);
+    color: var(--bg-primary);
+}
+
+.btn-outline {
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    background: transparent;
+}
+
+.btn-outline:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+    transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .notifications-container {
+        padding: 15px;
+    }
+    
+    .notifications-header {
+        text-align: center;
+    }
+    
+    .header-stats {
+        justify-content: center;
+        margin-top: 15px;
+    }
+    
+    .notification-item {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+    
+    .notification-header {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .notification-time {
+        margin-left: 0;
+    }
+    
+    .notification-footer {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .pagination-container {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .empty-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .empty-actions .btn {
+        width: 100%;
+        max-width: 200px;
+    }
+}
+
+/* Animation for notifications */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.notification-item {
+    animation: slideInUp 0.6s ease forwards;
+}
+
+.notification-item:nth-child(1) { animation-delay: 0.1s; }
+.notification-item:nth-child(2) { animation-delay: 0.2s; }
+.notification-item:nth-child(3) { animation-delay: 0.3s; }
+.notification-item:nth-child(4) { animation-delay: 0.4s; }
+.notification-item:nth-child(5) { animation-delay: 0.5s; }
+
+/* Notification type colors */
+.notification-item .notification-icon.application_update { color: var(--accent-blue); }
+.notification-item .notification-icon.payment_reminder { color: var(--accent-yellow); }
+.notification-item .notification-icon.loan_approved { color: var(--accent-green); }
+.notification-item .notification-icon.loan_rejected { color: var(--accent-red); }
+.notification-item .notification-icon.system { color: var(--text-muted); }
+
+.notification-item.unread .notification-icon.application_update { background: var(--accent-blue); }
+.notification-item.unread .notification-icon.payment_reminder { background: var(--accent-yellow); }
+.notification-item.unread .notification-icon.loan_approved { background: var(--accent-green); }
+.notification-item.unread .notification-icon.loan_rejected { background: var(--accent-red); }
+.notification-item.unread .notification-icon.system { background: var(--text-muted); }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hover effects to notification items
+    const notificationItems = document.querySelectorAll('.notification-item');
+    notificationItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateX(5px)';
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateX(0)';
+        });
+    });
+
+    // Add loading state to mark as read buttons
+    const markReadButtons = document.querySelectorAll('.mark-read-btn');
+    markReadButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Marking...';
+            this.disabled = true;
+            
+            // Revert after 2 seconds if still on page
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                this.disabled = false;
+            }, 2000);
+        });
+    });
+
+    // Add loading state to mark all as read button
+    const markAllButton = document.querySelector('.mark-all-btn');
+    if (markAllButton) {
+        markAllButton.addEventListener('click', function(e) {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Marking All...';
+            this.disabled = true;
+            
+            // Revert after 3 seconds if still on page
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                this.disabled = false;
+            }, 3000);
+        });
+    }
+
+    // Auto-refresh notifications every 30 seconds
+    setInterval(() => {
+        // In production, this would check for new notifications
+        console.log('Checking for new notifications...');
+    }, 30000);
+
+    // Add click animation to notification items
+    notificationItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            if (!e.target.closest('button')) {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

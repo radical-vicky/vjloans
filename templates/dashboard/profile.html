@@ -1,0 +1,542 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}My Profile - VictorLoans{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-xxl-10 col-xl-12">
+            <!-- Header Section -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="text-white mb-1"><i class="fas fa-user-circle me-2 text-primary"></i>My Profile</h2>
+                    <p class="text-muted mb-0">Manage your personal information and account settings</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Left Column - Profile Overview -->
+                <div class="col-lg-4">
+                    <!-- Profile Card -->
+                    <div class="card border-0 bg-dark-secondary mb-4">
+                        <div class="card-body text-center p-4">
+                            <div class="position-relative d-inline-block mb-3">
+                                {% if user.borrowerprofile.has_profile_picture %}
+                                    <img src="{{ user.borrowerprofile.profile_picture.url }}" 
+                                         alt="Profile Picture" 
+                                         class="rounded-circle profile-picture-main shadow"
+                                         style="width: 120px; height: 120px; object-fit: cover;">
+                                {% else %}
+                                    <div class="rounded-circle bg-gray-700 d-flex align-items-center justify-content-center shadow profile-picture-main"
+                                         style="width: 120px; height: 120px;">
+                                        <i class="fas fa-user fa-3x text-muted"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="position-absolute bottom-0 end-0">
+                                    <div class="bg-primary rounded-circle p-2 border border-3 border-dark">
+                                        <i class="fas fa-camera text-dark fs-6"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h4 class="text-white mb-1">{{ user.get_full_name|default:user.username }}</h4>
+                            <p class="text-muted mb-3">Member since {{ user.date_joined|date:"M Y" }}</p>
+                            
+                            <div class="d-flex justify-content-center gap-3 mb-4">
+                                <div class="text-center">
+                                    <div class="text-primary fw-bold fs-4">{{ user.borrowerprofile.credit_score }}</div>
+                                    <small class="text-muted">Credit Score</small>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-success fw-bold fs-4">{{ user.loanapplication_set.count }}</div>
+                                    <small class="text-muted">Applications</small>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-warning fw-bold fs-4">{{ approved_loans_count|default:"0" }}</div>
+                                    <small class="text-muted">Approved</small>
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-700 rounded-3 p-3 text-start">
+                                <h6 class="text-white mb-3">Profile Completion</h6>
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="progress flex-grow-1 me-3" style="height: 6px;">
+                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 85%"></div>
+                                    </div>
+                                    <small class="text-muted">85%</small>
+                                </div>
+                                <small class="text-muted">Complete your profile to increase loan approval chances</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="card border-0 bg-dark-secondary">
+                        <div class="card-header bg-transparent border-bottom border-gray-700 py-3">
+                            <h6 class="text-white mb-0"><i class="fas fa-chart-bar me-2 text-primary"></i>Account Overview</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-gray-700">
+                                <span class="text-muted">Account Status</span>
+                                <span class="badge bg-success">Active</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-gray-700">
+                                <span class="text-muted">Verification</span>
+                                <span class="badge bg-warning">Pending</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-gray-700">
+                                <span class="text-muted">Last Login</span>
+                                <span class="text-white">{{ user.last_login|date:"M d, Y"|default:"Never" }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2">
+                                <span class="text-muted">Loan Limit</span>
+                                <span class="text-primary fw-bold">KSh 500,000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Edit Form -->
+                <div class="col-lg-8">
+                    <div class="card border-0 bg-dark-secondary">
+                        <div class="card-header bg-transparent border-bottom border-gray-700 py-3">
+                            <h6 class="text-white mb-0"><i class="fas fa-edit me-2 text-primary"></i>Edit Profile Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                
+                                <!-- Profile Picture Upload -->
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <div class="d-flex align-items-center justify-content-between mb-3">
+                                            <h6 class="text-white mb-0">Profile Picture</h6>
+                                            <label for="id_profile_picture" class="btn btn-outline-primary btn-sm mb-0">
+                                                <i class="fas fa-upload me-1"></i>Upload New
+                                            </label>
+                                            {{ profile_form.profile_picture }}
+                                        </div>
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Recommended: Square image, max 2MB. JPG, PNG, GIF supported.
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <!-- Personal Information -->
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <h6 class="text-white border-bottom border-gray-700 pb-2 mb-3">Personal Information</h6>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            {{ user_form.first_name|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            {{ user_form.last_name|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            {{ user_form.email|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label class="form-label text-white">Username</label>
+                                            <input type="text" class="form-control bg-gray-700 border-gray-600 text-white" 
+                                                   value="{{ user.username }}" readonly>
+                                            <small class="form-text text-muted">Username cannot be changed</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Borrower Information -->
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <h6 class="text-white border-bottom border-gray-700 pb-2 mb-3">Borrower Information</h6>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            {{ profile_form.id_number|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            {{ profile_form.phone_number|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            {{ profile_form.date_of_birth|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            {{ profile_form.employment_status|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            {{ profile_form.monthly_income|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            {{ profile_form.employer_name|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Form Actions -->
+                                <div class="d-flex justify-content-end gap-2 pt-3 border-top border-gray-700">
+                                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-times me-2"></i>Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-primary px-4">
+                                        <i class="fas fa-save me-2"></i>Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --bg-dark-primary: #0B0E11;
+    --bg-dark-secondary: #1E2026;
+    --bg-dark-tertiary: #2B2F36;
+    --border-dark: #474D57;
+    --text-primary: #00C087;
+    --text-white: #EAECEF;
+    --text-muted: #848E9C;
+}
+
+body {
+    background: var(--bg-dark-primary);
+}
+
+.bg-dark-secondary {
+    background-color: var(--bg-dark-secondary) !important;
+}
+
+.bg-gray-700 {
+    background-color: var(--bg-dark-tertiary) !important;
+}
+
+.border-gray-700 {
+    border-color: var(--border-dark) !important;
+}
+
+/* Card Styling */
+.card {
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* Form Styling */
+.form-control {
+    background-color: var(--bg-dark-tertiary);
+    border: 1px solid var(--border-dark);
+    color: var(--text-white);
+    border-radius: 8px;
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    background-color: var(--bg-dark-tertiary);
+    border-color: var(--text-primary);
+    color: var(--text-white);
+    box-shadow: 0 0 0 0.2rem rgba(0, 192, 135, 0.15);
+}
+
+.form-control:read-only {
+    background-color: var(--bg-dark-secondary);
+    border-color: var(--border-dark);
+    opacity: 0.7;
+}
+
+.form-label {
+    color: var(--text-white);
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.form-text {
+    color: var(--text-muted) !important;
+    font-size: 0.875rem;
+}
+
+/* Button Styling */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 10px 20px;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--text-primary) 0%, #00A875 100%);
+    color: #0B0E11;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #00A875 0%, #009166 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0, 192, 135, 0.4);
+}
+
+.btn-outline-primary {
+    border: 1px solid var(--text-primary);
+    color: var(--text-primary);
+    background: transparent;
+}
+
+.btn-outline-primary:hover {
+    background: var(--text-primary);
+    color: #0B0E11;
+    transform: translateY(-1px);
+}
+
+.btn-outline-secondary {
+    border: 1px solid var(--border-dark);
+    color: var(--text-muted);
+    background: transparent;
+}
+
+.btn-outline-secondary:hover {
+    background: var(--border-dark);
+    color: var(--text-white);
+    transform: translateY(-1px);
+}
+
+/* Profile Picture */
+.profile-picture-main {
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+}
+
+.profile-picture-main:hover {
+    transform: scale(1.05);
+    border-color: var(--text-primary);
+    box-shadow: 0 8px 25px rgba(0, 192, 135, 0.3);
+}
+
+/* Progress Bar */
+.progress {
+    background-color: var(--bg-dark-tertiary);
+    border-radius: 10px;
+}
+
+.progress-bar {
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--text-primary) 0%, #00A875 100%);
+}
+
+/* Badges */
+.badge {
+    border-radius: 6px;
+    font-weight: 600;
+    padding: 6px 12px;
+}
+
+/* Crispy Forms Override */
+.asteriskField {
+    color: #F6465D;
+}
+
+.form-check-input {
+    background-color: var(--bg-dark-tertiary);
+    border: 1px solid var(--border-dark);
+}
+
+.form-check-input:checked {
+    background-color: var(--text-primary);
+    border-color: var(--text-primary);
+}
+
+/* Select Styling */
+.form-select {
+    background-color: var(--bg-dark-tertiary);
+    border: 1px solid var(--border-dark);
+    color: var(--text-white);
+    border-radius: 8px;
+    padding: 12px 16px;
+}
+
+.form-select:focus {
+    background-color: var(--bg-dark-tertiary);
+    border-color: var(--text-primary);
+    color: var(--text-white);
+    box-shadow: 0 0 0 0.2rem rgba(0, 192, 135, 0.15);
+}
+
+/* Hide default file input */
+#id_profile_picture {
+    display: none;
+}
+
+/* Text Colors */
+.text-primary {
+    color: var(--text-primary) !important;
+}
+
+.text-white {
+    color: var(--text-white) !important;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* Border radius utilities */
+.rounded-3 {
+    border-radius: 12px !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 20px 15px;
+    }
+    
+    .card-body {
+        padding: 20px !important;
+    }
+    
+    .profile-picture-main {
+        width: 100px !important;
+        height: 100px !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Profile picture preview
+    const profilePictureInput = document.getElementById('id_profile_picture');
+    const profilePicturePreview = document.querySelector('.profile-picture-main');
+    
+    if (profilePictureInput) {
+        profilePictureInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // Validate file size (2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('File size must be less than 2MB');
+                    this.value = '';
+                    return;
+                }
+                
+                // Validate file type
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Please select a valid image file (JPG, JPEG, PNG, GIF)');
+                    this.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    if (profilePicturePreview.tagName === 'IMG') {
+                        profilePicturePreview.src = e.target.result;
+                    } else {
+                        // Replace default icon with image
+                        profilePicturePreview.outerHTML = `<img src="${e.target.result}" 
+                                                              alt="Profile Picture" 
+                                                              class="rounded-circle profile-picture-main shadow"
+                                                              style="width: 120px; height: 120px; object-fit: cover;">`;
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    // Form submission loading state
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function() {
+            const submitButton = form.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+                submitButton.disabled = true;
+                
+                // Disable other buttons
+                const cancelButton = form.querySelector('a.btn');
+                if (cancelButton) {
+                    cancelButton.classList.add('disabled');
+                    cancelButton.style.pointerEvents = 'none';
+                    cancelButton.style.opacity = '0.6';
+                }
+            }
+        });
+    }
+    
+    // Real-time form validation
+    const formControls = document.querySelectorAll('.form-control, .form-select');
+    formControls.forEach(control => {
+        control.addEventListener('invalid', function() {
+            this.classList.add('is-invalid');
+        });
+        
+        control.addEventListener('input', function() {
+            if (this.checkValidity()) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+            }
+        });
+    });
+    
+    // Auto-format phone number
+    const phoneInput = document.querySelector('input[name="phone_number"]');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.startsWith('254')) {
+                value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4');
+            } else if (value.startsWith('07') || value.startsWith('01')) {
+                value = value.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3');
+            }
+            e.target.value = value;
+        });
+    }
+    
+    // Auto-format ID number
+    const idInput = document.querySelector('input[name="id_number"]');
+    if (idInput) {
+        idInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 8) {
+                e.target.value = value;
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

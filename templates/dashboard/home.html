@@ -1,0 +1,755 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}VictorLoans - Fast, Secure & Affordable Loans{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section" style="padding: 0; margin-top: 2px;">
+    <div class="container">
+        <div class="row align-items-center min-vh-100 py-5">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <div class="badge bg-accent-green-20 text-accent-green mb-3 px-3 py-2 rounded-pill d-inline-flex align-items-center">
+                        <i class="fas fa-bolt me-2 small"></i>
+                        <span>Fast & Secure Loans</span>
+                    </div>
+                    <h1 class="hero-title mb-4">Get The Financial Support You <span class="text-gradient">Need</span></h1>
+                    <p class="hero-subtitle mb-4">Quick, secure, and transparent loan services with competitive rates. From personal loans to education financing, we provide reliable financial solutions.</p>
+                    <div class="d-flex flex-wrap gap-3 mb-4">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'dashboard' %}" class="btn btn-accent-green btn-lg px-4 py-3">
+                                <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                            </a>
+                        {% else %}
+                            <a href="{% url 'account_signup' %}" class="btn btn-accent-green btn-lg px-4 py-3">
+                                <i class="fas fa-rocket me-2"></i>Get Started Now
+                            </a>
+                        {% endif %}
+                        <a href="#loans" class="btn btn-outline-light btn-lg px-4 py-3">
+                            <i class="fas fa-search me-2"></i>Explore Loans
+                        </a>
+                    </div>
+                    <div class="mt-4 d-flex flex-wrap gap-4">
+                        <div class="d-flex align-items-center">
+                            <div class="feature-badge bg-accent-green-20 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">
+                                <i class="fas fa-check-circle text-accent-green small"></i>
+                            </div>
+                            <span class="text-light">Fast Approval</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="feature-badge bg-accent-green-20 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">
+                                <i class="fas fa-check-circle text-accent-green small"></i>
+                            </div>
+                            <span class="text-light">No Hidden Fees</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="feature-badge bg-accent-green-20 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">
+                                <i class="fas fa-check-circle text-accent-green small"></i>
+                            </div>
+                            <span class="text-light">Secure & Safe</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-card-container position-relative">
+                    <!-- Floating Elements -->
+                    <div class="floating-element element-1">
+                        <div class="bg-accent-green-20 rounded-3 p-3 shadow">
+                            <i class="fas fa-shield-alt text-accent-green fa-lg"></i>
+                        </div>
+                    </div>
+                    <div class="floating-element element-2">
+                        <div class="bg-accent-yellow-20 rounded-3 p-3 shadow">
+                            <i class="fas fa-percentage text-accent-yellow fa-lg"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Main Hero Card -->
+                    <div class="hero-card bg-secondary border border-border-color rounded-4 shadow-lg p-4 mx-auto">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-accent-green-20 rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                    <i class="fas fa-wallet text-accent-green fa-lg"></i>
+                                </div>
+                                <div>
+                                    <div class="text-muted small">Available Credit</div>
+                                    <div class="fw-bold text-primary h5 mb-0">KSh 150,000</div>
+                                </div>
+                            </div>
+                            <div class="badge bg-accent-green rounded-pill px-3 py-2">
+                                <i class="fas fa-check-circle me-1"></i>Active
+                            </div>
+                        </div>
+                        
+                        <div class="bg-tertiary rounded-3 p-4 mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-muted">Loan Amount</span>
+                                <span class="fw-bold text-primary h5 mb-0">KSh 50,000</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted">Monthly Payment</span>
+                                <span class="fw-bold text-primary h5 mb-0">KSh 4,200</span>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-accent-green w-100 py-3">
+                            <i class="fas"><a href="{% url 'loan_list' %}" style="text-decoration: none; font-size: 15px;">Apply Instantly</a></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="section bg-primary">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title mb-3">Why Choose VictorLoans?</h2>
+            <p class="section-subtitle">We're committed to making your loan experience simple and stress-free</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card feature-card h-100 border-border-color bg-secondary">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-container bg-accent-green-20 rounded-3 d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
+                            <i class="fas fa-bolt fa-2x text-accent-green"></i>
+                        </div>
+                        <h5 class="card-title mb-3 text-primary">Lightning Fast Processing</h5>
+                        <p class="card-text text-muted">Get loan decisions in hours, not days. Our streamlined process ensures quick approval and disbursement.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card feature-card h-100 border-border-color bg-secondary">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-container bg-accent-green-20 rounded-3 d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
+                            <i class="fas fa-shield-alt fa-2x text-accent-green"></i>
+                        </div>
+                        <h5 class="card-title mb-3 text-primary">Bank-Level Security</h5>
+                        <p class="card-text text-muted">Your data is protected with 256-bit SSL encryption. We follow strict security protocols to keep your information safe.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card feature-card h-100 border-border-color bg-secondary">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-container bg-accent-yellow-20 rounded-3 d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
+                            <i class="fas fa-percentage fa-2x text-accent-yellow"></i>
+                        </div>
+                        <h5 class="card-title mb-3 text-primary">Competitive Rates</h5>
+                        <p class="card-text text-muted">Enjoy competitive interest rates with transparent pricing. No hidden fees or surprise charges.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Loan Products Section -->
+<section id="loans" class="section bg-primary">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title mb-3">Our Loan Products</h2>
+            <p class="section-subtitle">Choose from our variety of loan products designed to meet your needs</p>
+        </div>
+        
+        {% if loan_types %}
+        <div class="row g-4">
+            {% for loan_type in loan_types %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card loan-card h-100 border-border-color bg-secondary">
+                    <div class="card-header position-relative overflow-hidden border-0 rounded-top-4 py-5 
+                        {% if loan_type.category == 'secured' %}category-secured
+                        {% elif loan_type.category == 'unsecured' %}category-unsecured
+                        {% else %}category-mobile{% endif %}">
+                        
+                        <div class="position-absolute top-0 end-0 p-3 opacity-25">
+                            <i class="fas 
+                                {% if loan_type.category == 'secured' %}fa-home
+                                {% elif loan_type.category == 'unsecured' %}fa-graduation-cap
+                                {% else %}fa-mobile-alt{% endif %} fa-3x text-white"></i>
+                        </div>
+                        
+                        <div class="loan-icon mb-3">
+                            <div class="bg-white bg-opacity-10 rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="fas 
+                                    {% if loan_type.category == 'secured' %}fa-home
+                                    {% elif loan_type.category == 'unsecured' %}fa-graduation-cap
+                                    {% else %}fa-mobile-alt{% endif %} fa-2x text-white"></i>
+                            </div>
+                        </div>
+                        
+                        <h4 class="mb-1 text-white">{{ loan_type.name }}</h4>
+                        <small class="opacity-75 text-white">{{ loan_type.get_category_display }}</small>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <div class="loan-badge mb-3">
+                            <span class="badge 
+                                {% if loan_type.category == 'secured' %}bg-accent-green
+                                {% elif loan_type.category == 'unsecured' %}bg-accent-yellow
+                                {% else %}bg-accent-blue{% endif %} px-3 py-2 rounded-pill">
+                                {{ loan_type.get_category_display }}
+                            </span>
+                        </div>
+                        
+                        <p class="card-text text-muted mb-4">{{ loan_type.description }}</p>
+                        
+                        <div class="loan-details mb-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="detail-icon bg-tertiary rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                    <i class="fas fa-percentage 
+                                        {% if loan_type.category == 'secured' %}text-accent-green
+                                        {% elif loan_type.category == 'unsecured' %}text-accent-yellow
+                                        {% else %}text-accent-blue{% endif %}"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Interest Rate</small>
+                                    <div class="fw-bold text-primary">{{ loan_type.interest_rate }}%</div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="detail-icon bg-tertiary rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                    <i class="fas fa-money-bill-wave 
+                                        {% if loan_type.category == 'secured' %}text-accent-green
+                                        {% elif loan_type.category == 'unsecured' %}text-accent-yellow
+                                        {% else %}text-accent-blue{% endif %}"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Amount Range</small>
+                                    <div class="fw-bold text-primary">KSh {{ loan_type.min_amount|floatformat:0 }} - KSh {{ loan_type.max_amount|floatformat:0 }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="detail-icon bg-tertiary rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                    <i class="fas fa-calendar-alt 
+                                        {% if loan_type.category == 'secured' %}text-accent-green
+                                        {% elif loan_type.category == 'unsecured' %}text-accent-yellow
+                                        {% else %}text-accent-blue{% endif %}"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Maximum Term</small>
+                                    <div class="fw-bold text-primary">{{ loan_type.max_term }} months</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="loan-features">
+                            {% if loan_type.category == 'secured' %}
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-shield-alt text-accent-green me-2 small"></i>
+                                <small class="text-muted">Collateral required</small>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-percentage text-accent-green me-2 small"></i>
+                                <small class="text-muted">Lower interest rates</small>
+                            </div>
+                            {% elif loan_type.category == 'unsecured' %}
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-unlock text-accent-yellow me-2 small"></i>
+                                <small class="text-muted">No collateral needed</small>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-bolt text-accent-yellow me-2 small"></i>
+                                <small class="text-muted">Quick approval</small>
+                            </div>
+                            {% else %}
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-mobile text-accent-blue me-2 small"></i>
+                                <small class="text-muted">Instant disbursement</small>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-clock text-accent-blue me-2 small"></i>
+                                <small class="text-muted">24/7 availability</small>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer bg-transparent text-center border-0 pb-4">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'loan_apply' loan_type.id %}" class="btn 
+                                {% if loan_type.category == 'secured' %}btn-accent-green
+                                {% elif loan_type.category == 'unsecured' %}btn-accent-yellow
+                                {% else %}btn-accent-blue{% endif %} px-4 py-2 rounded-pill">
+                                Apply Now
+                            </a>
+                        {% else %}
+                            <a href="{% url 'account_signup' %}" class="btn 
+                                {% if loan_type.category == 'secured' %}btn-accent-green
+                                {% elif loan_type.category == 'unsecured' %}btn-accent-yellow
+                                {% else %}btn-accent-blue{% endif %} px-4 py-2 rounded-pill">
+                                Get Started
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <div class="empty-state">
+                <div class="bg-accent-yellow-20 rounded-3 d-inline-flex align-items-center justify-content-center mb-4" style="width: 100px; height: 100px;">
+                    <i class="fas fa-exclamation-triangle fa-3x text-accent-yellow"></i>
+                </div>
+                <h4 class="text-accent-yellow mb-3">No Loan Products Available</h4>
+                <p class="text-muted mb-4">We're currently updating our loan products. Please check back later.</p>
+                {% if user.is_superuser %}
+                <a href="{% url 'admin:dashboard_loantype_add' %}" class="btn btn-accent-green rounded-pill">
+                    <i class="fas fa-plus me-2"></i>Add Loan Products
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section id="how-it-works" class="section bg-primary">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title mb-3">How It Works</h2>
+            <p class="section-subtitle">Get your loan in 4 simple steps</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="step-container position-relative">
+                    <div class="step-number bg-accent-green text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-4 mx-auto" style="width: 60px; height: 60px;">
+                        1
+                    </div>
+                    <div class="step-icon bg-accent-green-20 rounded-3 d-inline-flex align-items-center justify-content-center mb-4 mx-auto" style="width: 80px; height: 80px;">
+                        <i class="fas fa-user-plus fa-2x text-accent-green"></i>
+                    </div>
+                    <div class="step-content">
+                        <h5 class="mb-3 text-primary">Create Account</h5>
+                        <p class="text-muted">Sign up and complete your profile in minutes</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="step-container position-relative">
+                    <div class="step-number bg-accent-green text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-4 mx-auto" style="width: 60px; height: 60px;">
+                        2
+                    </div>
+                    <div class="step-icon bg-accent-green-20 rounded-3 d-inline-flex align-items-center justify-content-center mb-4 mx-auto" style="width: 80px; height: 80px;">
+                        <i class="fas fa-hand-holding-usd fa-2x text-accent-green"></i>
+                    </div>
+                    <div class="step-content">
+                        <h5 class="mb-3 text-primary">Choose Loan</h5>
+                        <p class="text-muted">Select the loan product that fits your needs</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="step-container position-relative">
+                    <div class="step-number bg-accent-green text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-4 mx-auto" style="width: 60px; height: 60px;">
+                        3
+                    </div>
+                    <div class="step-icon bg-accent-green-20 rounded-3 d-inline-flex align-items-center justify-content-center mb-4 mx-auto" style="width: 80px; height: 80px;">
+                        <i class="fas fa-check-circle fa-2x text-accent-green"></i>
+                    </div>
+                    <div class="step-content">
+                        <h5 class="mb-3 text-primary">Get Approved</h5>
+                        <p class="text-muted">Receive quick approval decision</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="step-container position-relative">
+                    <div class="step-number bg-accent-green text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-4 mx-auto" style="width: 60px; height: 60px;">
+                        4
+                    </div>
+                    <div class="step-icon bg-accent-green-20 rounded-3 d-inline-flex align-items-center justify-content-center mb-4 mx-auto" style="width: 80px; height: 80px;">
+                        <i class="fas fa-money-bill-wave fa-2x text-accent-green"></i>
+                    </div>
+                    <div class="step-content">
+                        <h5 class="mb-3 text-primary">Receive Funds</h5>
+                        <p class="text-muted">Get your money disbursed to your account</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="section bg-accent-green text-primary">
+    <div class="container">
+        <div class="row g-4 text-center">
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number mb-2 display-6 fw-bold">10,000+</div>
+                    <div class="stat-label opacity-75">Satisfied Customers</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number mb-2 display-6 fw-bold">KSh 500M+</div>
+                    <div class="stat-label opacity-75">Loans Disbursed</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number mb-2 display-6 fw-bold">24hrs</div>
+                    <div class="stat-label opacity-75">Average Processing</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number mb-2 display-6 fw-bold">98%</div>
+                    <div class="stat-label opacity-75">Customer Satisfaction</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="section bg-secondary">
+    <div class="container text-center">
+        <h2 class="mb-3 text-primary">Ready to Get Started?</h2>
+        <p class="lead mb-4 text-muted">Join thousands of satisfied customers who have transformed their financial lives with VictorLoans</p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="btn btn-accent-green btn-lg px-4 py-3 rounded-pill">
+                    <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                </a>
+                <a href="{% url 'loan_list' %}" class="btn btn-outline-light btn-lg px-4 py-3 rounded-pill">
+                    <i class="fas fa-hand-holding-usd me-2"></i>View All Loans
+                </a>
+            {% else %}
+                <a href="{% url 'account_signup' %}" class="btn btn-accent-green btn-lg px-4 py-3 rounded-pill">
+                    <i class="fas fa-user-plus me-2"></i>Create Your Account
+                </a>
+                <a href="{% url 'account_login' %}" class="btn btn-outline-light btn-lg px-4 py-3 rounded-pill">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Bitget Theme Variables */
+    :root {
+        --bg-primary: #0B0E11;
+        --bg-secondary: #1E2026;
+        --bg-tertiary: #2B2F36;
+        --border-color: #474D57;
+        --text-primary: #EAECEF;
+        --text-secondary: #B7BDC6;
+        --text-muted: #848E9C;
+        --accent-green: #00C087;
+        --accent-green-hover: #00A875;
+        --accent-yellow: #F0B90B;
+        --accent-red: #F6465D;
+        --accent-blue: #0095FF;
+        --accent-purple: #8A2BE2;
+    }
+    
+    /* Color Classes */
+    .bg-primary { background-color: var(--bg-primary) !important; }
+    .bg-secondary { background-color: var(--bg-secondary) !important; }
+    .bg-tertiary { background-color: var(--bg-tertiary) !important; }
+    .border-border-color { border-color: var(--border-color) !important; }
+    .text-primary { color: var(--text-primary) !important; }
+    .text-muted { color: var(--text-muted) !important; }
+    
+    .bg-accent-green { background-color: var(--accent-green) !important; }
+    .bg-accent-yellow { background-color: var(--accent-yellow) !important; }
+    .bg-accent-blue { background-color: var(--accent-blue) !important; }
+    
+    .bg-accent-green-20 { background-color: rgba(0, 192, 135, 0.2) !important; }
+    .bg-accent-yellow-20 { background-color: rgba(240, 185, 11, 0.2) !important; }
+    .bg-accent-blue-20 { background-color: rgba(0, 149, 255, 0.2) !important; }
+    
+    .text-accent-green { color: var(--accent-green) !important; }
+    .text-accent-yellow { color: var(--accent-yellow) !important; }
+    .text-accent-blue { color: var(--accent-blue) !important; }
+    
+    .btn-accent-green {
+        background-color: var(--accent-green);
+        border-color: var(--accent-green);
+        color: var(--bg-primary);
+        font-weight: 600;
+    }
+    
+    .btn-accent-green:hover {
+        background-color: var(--accent-green-hover);
+        border-color: var(--accent-green-hover);
+        color: var(--bg-primary);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 192, 135, 0.3);
+    }
+    
+    .btn-accent-yellow {
+        background-color: var(--accent-yellow);
+        border-color: var(--accent-yellow);
+        color: var(--bg-primary);
+        font-weight: 600;
+    }
+    
+    .btn-accent-blue {
+        background-color: var(--accent-blue);
+        border-color: var(--accent-blue);
+        color: var(--bg-primary);
+        font-weight: 600;
+    }
+    
+    .btn-outline-light {
+        border-color: var(--border-color);
+        color: var(--text-secondary);
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-light:hover {
+        background-color: var(--text-secondary);
+        color: var(--bg-primary);
+        transform: translateY(-2px);
+    }
+    
+    /* Base Styles */
+    body {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .section {
+        padding: 80px 0;
+    }
+    
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+    }
+    
+    .section-subtitle {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+    
+    /* Hero Section */
+    .hero-section {
+        background: var(--bg-primary);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 70% 30%, rgba(0, 192, 135, 0.1) 0%, transparent 50%);
+    }
+    
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+    }
+    
+    .text-gradient {
+        background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-blue) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: var(--text-muted);
+        max-width: 500px;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+    
+    .hero-card-container {
+        position: relative;
+    }
+    
+    .floating-element {
+        position: absolute;
+        z-index: 2;
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    .element-1 {
+        top: -20px;
+        left: -20px;
+    }
+    
+    .element-2 {
+        bottom: -20px;
+        right: -20px;
+        animation-delay: 1.5s;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-10px) rotate(5deg); }
+    }
+    
+    /* Card Styles */
+    .card {
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+    }
+    
+    .card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        border-color: var(--accent-green);
+    }
+    
+    .feature-card, .loan-card {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s ease;
+    }
+    
+    .feature-card.animate-in, .loan-card.animate-in {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .rounded-4 {
+        border-radius: 16px !important;
+    }
+    
+    /* Loan Card Category Headers */
+    .category-secured::before { background: var(--accent-green); }
+    .category-unsecured::before { background: var(--accent-yellow); }
+    .category-mobile::before { background: var(--accent-blue); }
+    
+    .loan-header {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .loan-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100%;
+        opacity: 0.1;
+    }
+    
+    /* Step Process */
+    .step-container::after {
+        content: '';
+        position: absolute;
+        top: 30px;
+        right: -40px;
+        width: 80px;
+        height: 2px;
+        background: var(--border-color);
+        display: none;
+    }
+    
+    @media (min-width: 992px) {
+        .step-container::after {
+            display: block;
+        }
+        
+        .step-container:last-child::after {
+            display: none;
+        }
+    }
+    
+    /* Animation for cards */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .loan-card {
+        animation: fadeInUp 0.6s ease forwards;
+    }
+    
+    .loan-card:nth-child(1) { animation-delay: 0.1s; }
+    .loan-card:nth-child(2) { animation-delay: 0.2s; }
+    .loan-card:nth-child(3) { animation-delay: 0.3s; }
+    .loan-card:nth-child(4) { animation-delay: 0.4s; }
+    .loan-card:nth-child(5) { animation-delay: 0.5s; }
+    .loan-card:nth-child(6) { animation-delay: 0.6s; }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-in');
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.feature-card, .loan-card').forEach(function(el) {
+            observer.observe(el);
+        });
+        
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Add hover effects to loan cards
+        const loanCards = document.querySelectorAll('.loan-card');
+        loanCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    });
+</script>
+{% endblock %}

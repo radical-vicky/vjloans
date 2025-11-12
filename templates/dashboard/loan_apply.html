@@ -1,0 +1,1114 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Apply for {{ loan_type.name }} - QuickLoan{% endblock %}
+
+{% block content %}
+<div class="loan-apply-container">
+    <!-- Header Section -->
+    <div class="application-header">
+        <div class="header-content">
+            <div class="header-main">
+                <div class="header-icon">
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <div class="header-text">
+                    <h1 class="page-title">Apply for {{ loan_type.name }}</h1>
+                    <p class="page-subtitle">Complete your loan application details</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="{% url 'loan_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Loans
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="application-content">
+        <div class="application-main">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title-content">
+                        <i class="fas fa-edit card-title-icon"></i>
+                        <h3 class="card-title-text">Application Details</h3>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert-message alert-{{ message.tags }}">
+                                <div class="alert-content">
+                                    <i class="fas 
+                                        {% if message.tags == 'success' %}fa-check-circle
+                                        {% elif message.tags == 'error' %}fa-exclamation-circle
+                                        {% elif message.tags == 'warning' %}fa-exclamation-triangle
+                                        {% else %}fa-info-circle{% endif %} alert-icon">
+                                    </i>
+                                    <span class="alert-text">{{ message }}</span>
+                                </div>
+                                <button type="button" class="alert-close">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" id="loanApplicationForm" class="loan-application-form">
+                        {% csrf_token %}
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Loan Type</label>
+                                <div class="form-input-readonly">
+                                    <span class="readonly-text">{{ loan_type.name }} ({{ loan_type.get_category_display }})</span>
+                                </div>
+                                <div class="form-text">Selected loan product</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Interest Rate</label>
+                                <div class="form-input-readonly">
+                                    <span class="readonly-text">{{ loan_type.interest_rate }}%</span>
+                                </div>
+                                <div class="form-text">Annual interest rate</div>
+                            </div>
+                        </div>
+
+                        <div class="form-fields">
+                            {% for field in form %}
+                            <div class="form-group {% if field.errors %}has-error{% endif %}">
+                                <label for="{{ field.id_for_label }}" class="form-label">
+                                    {{ field.label }}
+                                    {% if field.field.required %}<span class="required">*</span>{% endif %}
+                                </label>
+                                <div class="input-wrapper">
+                                    {{ field }}
+                                    {% if field.name == 'amount' %}
+                                    <span class="input-currency">KSh</span>
+                                    {% endif %}
+                                </div>
+                                {% if field.help_text %}
+                                <div class="form-text">{{ field.help_text }}</div>
+                                {% endif %}
+                                {% if field.errors %}
+                                <div class="form-errors">
+                                    {% for error in field.errors %}
+                                    <div class="error-message">
+                                        <i class="fas fa-exclamation-circle error-icon"></i>
+                                        <span class="error-text">{{ error }}</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="application-summary">
+                            <div class="summary-header">
+                                <i class="fas fa-calculator summary-icon"></i>
+                                <h5 class="summary-title">Loan Summary</h5>
+                            </div>
+                            <div class="summary-items">
+                                <div class="summary-item">
+                                    <span class="summary-label">Loan Amount:</span>
+                                    <span class="summary-value" id="summary-amount">KSh 0.00</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Loan Term:</span>
+                                    <span class="summary-value" id="summary-term">0 months</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Monthly Installment:</span>
+                                    <span class="summary-value" id="summary-installment">KSh 0.00</span>
+                                </div>
+                                <div class="summary-item total">
+                                    <span class="summary-label">Total Repayment:</span>
+                                    <span class="summary-value" id="summary-total">KSh 0.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-submit">
+                                <span class="btn-text">
+                                    <i class="fas fa-paper-plane btn-icon"></i>
+                                    Submit Application
+                                </span>
+                                <div class="btn-loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                            </button>
+                            <a href="{% url 'loan_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-times btn-icon"></i>
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="application-sidebar">
+            <!-- Loan Requirements -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title-content">
+                        <i class="fas fa-list-check card-title-icon"></i>
+                        <h3 class="card-title-text">Requirements</h3>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="requirements-list">
+                        {{ loan_type.requirements|linebreaks }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Tips -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title-content">
+                        <i class="fas fa-lightbulb card-title-icon"></i>
+                        <h3 class="card-title-text">Application Tips</h3>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <ul class="tips-list">
+                        <li class="tip-item">
+                            <i class="fas fa-check tip-icon"></i>
+                            <span class="tip-text">Ensure all information is accurate</span>
+                        </li>
+                        <li class="tip-item">
+                            <i class="fas fa-check tip-icon"></i>
+                            <span class="tip-text">Choose an amount you can comfortably repay</span>
+                        </li>
+                        <li class="tip-item">
+                            <i class="fas fa-check tip-icon"></i>
+                            <span class="tip-text">Consider your monthly income when selecting term</span>
+                        </li>
+                        <li class="tip-item">
+                            <i class="fas fa-check tip-icon"></i>
+                            <span class="tip-text">Review all details before submitting</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Loan Features -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title-content">
+                        <i class="fas fa-star card-title-icon"></i>
+                        <h3 class="card-title-text">Features</h3>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <div class="feature-icon-wrapper">
+                                <i class="fas fa-bolt feature-icon"></i>
+                            </div>
+                            <div class="feature-content">
+                                <strong class="feature-title">Quick Approval</strong>
+                                <span class="feature-description">24-48 hour processing</span>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon-wrapper">
+                                <i class="fas fa-shield-alt feature-icon"></i>
+                            </div>
+                            <div class="feature-content">
+                                <strong class="feature-title">Secure</strong>
+                                <span class="feature-description">Bank-level security</span>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon-wrapper">
+                                <i class="fas fa-mobile-alt feature-icon"></i>
+                            </div>
+                            <div class="feature-content">
+                                <strong class="feature-title">Mobile Friendly</strong>
+                                <span class="feature-description">Apply anywhere, anytime</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Bitget Theme Variables */
+:root {
+    --bg-primary: #0B0E11;
+    --bg-secondary: #1E2026;
+    --bg-tertiary: #2B2F36;
+    --border-color: #474D57;
+    --text-primary: #EAECEF;
+    --text-secondary: #B7BDC6;
+    --text-muted: #848E9C;
+    --accent-green: #00C087;
+    --accent-green-hover: #00A875;
+    --accent-yellow: #F0B90B;
+    --accent-red: #F6465D;
+    --accent-blue: #0095FF;
+    --accent-purple: #8B5CF6;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.loan-apply-container {
+    min-height: 100vh;
+    background: var(--bg-primary);
+    padding: 0;
+}
+
+/* Header Styles */
+.application-header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 24px 0;
+    margin-bottom: 0;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+}
+
+.header-main {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+}
+
+.header-icon {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-primary);
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.header-text {
+    flex: 1;
+}
+
+.page-title {
+    color: var(--text-primary);
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    line-height: 1.2;
+}
+
+.page-subtitle {
+    color: var(--text-muted);
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+/* Application Layout */
+.application-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 24px;
+    align-items: start;
+}
+
+/* Dashboard Card */
+.dashboard-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    transition: all 0.3s ease;
+}
+
+.dashboard-card:last-child {
+    margin-bottom: 0;
+}
+
+.dashboard-card:hover {
+    border-color: var(--accent-green);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.card-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-tertiary);
+}
+
+.card-title-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.card-title-icon {
+    color: var(--accent-green);
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.card-title-text {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.card-body {
+    padding: 24px;
+}
+
+/* Form Styles */
+.loan-application-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-label {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: 4px;
+}
+
+.required {
+    color: var(--accent-red);
+    margin-left: 2px;
+}
+
+.form-input-readonly {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+.readonly-text {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.form-text {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+.form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Input Fields */
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.form-control {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    padding: 12px 16px;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    width: 100%;
+    min-height: 44px;
+    font-family: inherit;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 3px rgba(0, 192, 135, 0.1);
+    background: var(--bg-tertiary);
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
+}
+
+.input-currency {
+    position: absolute;
+    right: 16px;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+    pointer-events: none;
+}
+
+/* Form Errors */
+.has-error .form-control {
+    border-color: var(--accent-red);
+    box-shadow: 0 0 0 3px rgba(246, 70, 93, 0.1);
+}
+
+.form-errors {
+    margin-top: 4px;
+}
+
+.error-message {
+    color: var(--accent-red);
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.4;
+}
+
+.error-icon {
+    font-size: 0.7rem;
+    flex-shrink: 0;
+}
+
+.error-text {
+    flex: 1;
+}
+
+/* Application Summary */
+.application-summary {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 8px;
+}
+
+.summary-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.summary-icon {
+    color: var(--accent-green);
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.summary-title {
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.summary-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.summary-item:not(:last-child) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.summary-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.summary-value {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.summary-item.total {
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+    margin-top: 4px;
+}
+
+.summary-item.total .summary-value {
+    color: var(--accent-green);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    margin-top: 8px;
+}
+
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 14px 24px;
+    border: none;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    cursor: pointer;
+    font-family: inherit;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-green), var(--accent-green-hover));
+    color: var(--bg-primary);
+    flex: 1;
+}
+
+.btn-primary:hover:not(.loading) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 192, 135, 0.3);
+}
+
+.btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 13px 23px;
+}
+
+.btn-secondary:hover {
+    background: var(--border-color);
+    border-color: var(--text-muted);
+}
+
+.btn-icon {
+    margin-right: 8px;
+    font-size: 0.8rem;
+}
+
+.btn-text {
+    display: flex;
+    align-items: center;
+}
+
+.btn-loading {
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Alert Messages */
+.alert-message {
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    animation: slideIn 0.3s ease;
+    border: 1px solid;
+}
+
+.alert-success {
+    background: rgba(0, 192, 135, 0.1);
+    border-color: rgba(0, 192, 135, 0.3);
+    color: var(--accent-green);
+}
+
+.alert-error {
+    background: rgba(246, 70, 93, 0.1);
+    border-color: rgba(246, 70, 93, 0.3);
+    color: var(--accent-red);
+}
+
+.alert-warning {
+    background: rgba(240, 185, 11, 0.1);
+    border-color: rgba(240, 185, 11, 0.3);
+    color: var(--accent-yellow);
+}
+
+.alert-info {
+    background: rgba(0, 149, 255, 0.1);
+    border-color: rgba(0, 149, 255, 0.3);
+    color: var(--accent-blue);
+}
+
+.alert-content {
+    display: flex;
+    align-items: flex-start;
+    flex: 1;
+    gap: 12px;
+}
+
+.alert-icon {
+    font-size: 1rem;
+    margin-top: 1px;
+    flex-shrink: 0;
+}
+
+.alert-text {
+    flex: 1;
+    line-height: 1.4;
+}
+
+.alert-close {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 4px;
+    margin-left: 12px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;
+}
+
+.alert-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Sidebar Styles */
+.requirements-list {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+.requirements-list p {
+    margin-bottom: 12px;
+}
+
+.requirements-list p:last-child {
+    margin-bottom: 0;
+}
+
+.tips-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tip-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.tip-icon {
+    color: var(--accent-green);
+    margin-top: 2px;
+    flex-shrink: 0;
+    font-size: 0.8rem;
+}
+
+.tip-text {
+    flex: 1;
+}
+
+.features-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+    border-color: var(--accent-green);
+    transform: translateY(-2px);
+}
+
+.feature-icon-wrapper {
+    width: 40px;
+    height: 40px;
+    background: var(--accent-green);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.feature-icon {
+    color: var(--bg-primary);
+    font-size: 1rem;
+}
+
+.feature-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.feature-title {
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.feature-description {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    margin: 0;
+}
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+/* Loading State */
+.btn-submit.loading .btn-text {
+    opacity: 0;
+}
+
+.btn-submit.loading .btn-loading {
+    display: flex;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.btn-submit.loading {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .application-content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .application-sidebar {
+        order: -1;
+    }
+}
+
+@media (max-width: 768px) {
+    .application-header {
+        padding: 20px 0;
+    }
+    
+    .header-content {
+        padding: 0 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    
+    .header-main {
+        width: 100%;
+    }
+    
+    .header-actions {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .application-content {
+        padding: 24px 20px;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+    }
+    
+    .header-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .application-header {
+        padding: 16px 0;
+    }
+    
+    .header-content {
+        padding: 0 16px;
+    }
+    
+    .application-content {
+        padding: 20px 16px;
+    }
+    
+    .card-body {
+        padding: 20px;
+    }
+    
+    .application-summary {
+        padding: 16px;
+    }
+    
+    .form-actions {
+        gap: 8px;
+    }
+    
+    .btn {
+        padding: 12px 20px;
+    }
+    
+    .feature-item {
+        padding: 12px;
+    }
+    
+    .feature-icon-wrapper {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .feature-icon {
+        font-size: 0.9rem;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const amountInput = document.getElementById('id_amount');
+    const termInput = document.getElementById('id_term_months');
+    const interestRate = {{ loan_type.interest_rate }};
+    const submitButton = document.querySelector('.btn-submit');
+    const form = document.getElementById('loanApplicationForm');
+    
+    function calculateRepayment() {
+        const amount = parseFloat(amountInput.value) || 0;
+        const term = parseInt(termInput.value) || 0;
+        
+        if (amount > 0 && term > 0) {
+            const monthlyRate = interestRate / 100 / 12;
+            let monthlyInstallment;
+            
+            if (monthlyRate > 0) {
+                monthlyInstallment = (amount * monthlyRate * Math.pow(1 + monthlyRate, term)) / 
+                                   (Math.pow(1 + monthlyRate, term) - 1);
+            } else {
+                monthlyInstallment = amount / term;
+            }
+            
+            const totalRepayment = monthlyInstallment * term;
+            
+            // Update summary
+            document.getElementById('summary-amount').textContent = 'KSh ' + amount.toLocaleString('en-KE', {minimumFractionDigits: 2});
+            document.getElementById('summary-term').textContent = term + ' months';
+            document.getElementById('summary-installment').textContent = 'KSh ' + monthlyInstallment.toLocaleString('en-KE', {minimumFractionDigits: 2});
+            document.getElementById('summary-total').textContent = 'KSh ' + totalRepayment.toLocaleString('en-KE', {minimumFractionDigits: 2});
+        } else {
+            // Reset to default values
+            document.getElementById('summary-amount').textContent = 'KSh 0.00';
+            document.getElementById('summary-term').textContent = '0 months';
+            document.getElementById('summary-installment').textContent = 'KSh 0.00';
+            document.getElementById('summary-total').textContent = 'KSh 0.00';
+        }
+    }
+    
+    // Real-time calculation
+    if (amountInput && termInput) {
+        amountInput.addEventListener('input', calculateRepayment);
+        termInput.addEventListener('input', calculateRepayment);
+        
+        // Initial calculation with default values
+        setTimeout(calculateRepayment, 100);
+    }
+    
+    // Form submission loading state
+    if (form && submitButton) {
+        form.addEventListener('submit', function(e) {
+            // Basic validation
+            const amount = parseFloat(amountInput.value) || 0;
+            const term = parseInt(termInput.value) || 0;
+            
+            if (amount <= 0 || term <= 0) {
+                e.preventDefault();
+                return;
+            }
+            
+            submitButton.classList.add('loading');
+            submitButton.disabled = true;
+        });
+    }
+    
+    // Add input validation and styling
+    const inputs = document.querySelectorAll('.form-control');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('focused');
+        });
+        
+        input.addEventListener('blur', function() {
+            this.parentElement.classList.remove('focused');
+            if (this.value.trim() !== '') {
+                this.classList.add('has-value');
+            } else {
+                this.classList.remove('has-value');
+            }
+        });
+        
+        // Initial state check
+        if (input.value.trim() !== '') {
+            input.classList.add('has-value');
+        }
+    });
+    
+    // Auto-close alerts
+    const alerts = document.querySelectorAll('.alert-message');
+    alerts.forEach(alert => {
+        const closeBtn = alert.querySelector('.alert-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function() {
+                alert.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (alert.parentNode) {
+                        alert.remove();
+                    }
+                }, 300);
+            });
+        }
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (alert.parentNode) {
+                alert.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (alert.parentNode) {
+                        alert.remove();
+                    }
+                }, 300);
+            }
+        }, 5000);
+    });
+    
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.dashboard-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

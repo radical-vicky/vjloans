@@ -1,0 +1,631 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sign In - VJLoans{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <!-- Header Section -->
+        <div class="login-header">
+            <div class="brand-logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <path d="M16 2L20 12L30 12L22 18L26 28L16 22L6 28L10 18L2 12L12 12L16 2Z" fill="currentColor"/>
+                </svg>
+            </div>
+            <h1 class="login-title">Sign In</h1>
+            <p class="login-subtitle">Access your VJLoans account</p>
+        </div>
+
+        <!-- Login Form -->
+        <form method="post" action="{% url 'account_login' %}" class="login-form">
+            {% csrf_token %}
+            
+            <!-- Error Messages -->
+            {% if form.errors %}
+            <div class="error-alert">
+                <div class="error-icon">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 0C4.48 0 0 4.48 0 10C0 15.52 4.48 20 10 20C15.52 20 20 15.52 20 10C20 4.48 15.52 0 10 0ZM11 15H9V13H11V15ZM11 11H9V5H11V11Z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div class="error-content">
+                    <strong>Please check your information</strong>
+                    <p>Your email/username or password is incorrect. Please try again.</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Email/Username Field -->
+            <div class="form-group">
+                <label for="id_login" class="form-label">
+                    Email or Username
+                </label>
+                <div class="input-container">
+                    <input type="text" 
+                           name="login" 
+                           id="id_login" 
+                           placeholder="Enter your email or username"
+                           value="{{ form.login.value|default:'' }}"
+                           class="form-input {% if form.login.errors %}error{% endif %}"
+                           required
+                           autocomplete="email">
+                    <div class="input-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M2.5 6.66667L8.075 10.45C9.15 11.1833 10.85 11.1833 11.925 10.45L17.5 6.66667M5 15H15C16.375 15 17.5 13.875 17.5 12.5V7.5C17.5 6.125 16.375 5 15 5H5C3.625 5 2.5 6.125 2.5 7.5V12.5C2.5 13.875 3.625 15 5 15Z" 
+                                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Password Field -->
+            <div class="form-group">
+                <div class="form-label-row">
+                    <label for="id_password" class="form-label">
+                        Password
+                    </label>
+                    <a href="{% url 'account_reset_password' %}" class="forgot-link">
+                        Forgot password?
+                    </a>
+                </div>
+                <div class="input-container">
+                    <input type="password" 
+                           name="password" 
+                           id="id_password" 
+                           placeholder="Enter your password"
+                           class="form-input {% if form.password.errors %}error{% endif %}"
+                           required
+                           autocomplete="current-password">
+                    <div class="input-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M15 8.33333H15.8333C16.2754 8.33333 16.6993 8.50893 17.0118 8.82149C17.3244 9.13405 17.5 9.55797 17.5 10V16.6667C17.5 17.1087 17.3244 17.5326 17.0118 17.8452C16.6993 18.1577 16.2754 18.3333 15.8333 18.3333H4.16667C3.72464 18.3333 3.30072 18.1577 2.98816 17.8452C2.67559 17.5326 2.5 17.1087 2.5 16.6667V10C2.5 9.55797 2.67559 9.13405 2.98816 8.82149C3.30072 8.50893 3.72464 8.33333 4.16667 8.33333H5M15 8.33333V6.66667C15 5.6058 14.5786 4.58839 13.8284 3.83824C13.0783 3.08809 12.0609 2.66667 11 2.66667C9.93913 2.66667 8.92172 3.08809 8.17157 3.83824C7.42143 4.58839 7 5.6058 7 6.66667V8.33333M15 8.33333H7" 
+                                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Remember Me -->
+            <div class="remember-container">
+                <label class="checkbox-label">
+                    <input type="checkbox" 
+                           name="remember" 
+                           id="id_remember"
+                           {% if form.remember.value %}checked{% endif %}
+                           class="checkbox-input">
+                    <span class="checkbox-custom"></span>
+                    <span class="checkbox-text">Remember me</span>
+                </label>
+            </div>
+
+            {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            {% endif %}
+
+            <!-- Submit Button -->
+            <button type="submit" class="login-button">
+                <span class="button-text">Sign In</span>
+                <svg class="button-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M3.33325 10H16.6666M16.6666 10L11.6666 5M16.6666 10L11.6666 15" 
+                          stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </form>
+
+        <!-- Sign Up Link -->
+        <div class="signup-section">
+            <p class="signup-text">
+                Don't have an account? 
+                <a href="{% url 'account_signup' %}" class="signup-link">
+                    Sign up here
+                </a>
+            </p>
+        </div>
+
+        <!-- Social Login (Optional) -->
+        <div class="social-divider">
+            <span class="divider-line"></span>
+            <span class="divider-text">Or continue with</span>
+            <span class="divider-line"></span>
+        </div>
+
+        <div class="social-buttons">
+            <button type="button" class="social-button google-button">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M18.1712 8.36791H17.9998V8.33325H9.99984V11.6666H14.7095C14.0223 13.6071 12.1762 14.9999 9.99984 14.9999C7.23859 14.9999 4.99984 12.7612 4.99984 9.99992C4.99984 7.23867 7.23859 4.99992 9.99984 4.99992C11.2745 4.99992 12.4345 5.48075 13.3173 6.26625L15.6745 3.90909C14.1857 2.52208 12.195 1.66659 9.99984 1.66659C5.39767 1.66659 1.6665 5.39775 1.6665 9.99992C1.6665 14.6021 5.39767 18.3333 9.99984 18.3333C14.602 18.3333 18.3332 14.6021 18.3332 9.99992C18.3332 9.44125 18.2757 8.89575 18.1712 8.36791Z" fill="#FFC107"/>
+                    <path d="M2.62744 6.12125L5.36536 8.12925C6.10619 6.29492 7.90036 4.99992 9.99994 4.99992C11.2746 4.99992 12.4346 5.48075 13.3174 6.26625L15.6746 3.90909C14.1858 2.52208 12.1951 1.66659 9.99994 1.66659C6.79911 1.66659 4.02327 3.47359 2.62744 6.12125Z" fill="#FF3D00"/>
+                    <path d="M10 18.3333C12.1525 18.3333 14.1084 17.5096 15.5871 16.17L13.0079 13.9875C12.1432 14.6452 11.0865 15.0009 10 15C7.83254 15 5.99212 13.6179 5.29879 11.6892L2.58121 13.7829C3.96046 16.4817 6.76121 18.3333 10 18.3333Z" fill="#4CAF50"/>
+                    <path d="M18.1712 8.36791H17.9998V8.33325H9.99984V11.6666H14.7095C14.3809 12.5902 13.7889 13.3972 13.0067 13.9879L13.0079 13.9871L15.5871 16.1696C15.4046 16.3354 18.3332 14.1666 18.3332 9.99992C18.3332 9.44125 18.2757 8.89575 18.1712 8.36791Z" fill="#1976D2"/>
+                </svg>
+                Continue with Google
+            </button>
+            
+            <button type="button" class="social-button apple-button">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M15.075 10.525C15.0583 8.79167 16.5917 7.975 16.6667 7.925C15.6833 6.58333 14.1417 6.44167 13.5917 6.425C12.35 6.30833 11.1667 7.25 10.5167 7.25C9.85 7.25 8.85 6.44167 7.81667 6.45833C6.49167 6.475 5.28333 7.24167 4.58333 8.425C3.13333 10.875 4.08333 14.3917 5.41667 16.125C6.16667 17.1083 7.05 18.2167 8.15 18.1667C9.23333 18.1083 9.63333 17.5167 10.9333 17.5167C12.225 17.5167 12.5917 18.1667 13.7333 18.1417C14.8833 18.1167 15.65 17.125 16.375 16.1333C17.2417 15 17.5917 13.9 17.6083 13.8417C17.5833 13.825 15.0917 12.9917 15.075 10.525Z" fill="currentColor"/>
+                    <path d="M13.0917 5.25C13.6417 4.55833 14.0333 3.60833 13.9167 2.66667C13.0833 2.69167 12.025 3.225 11.4417 3.91667C10.925 4.525 10.4417 5.50833 10.575 6.41667C11.5083 6.48333 12.4917 5.94167 13.0917 5.25Z" fill="currentColor"/>
+                </svg>
+                Continue with Apple
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Main Container */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0F1B2D 0%, #1A2B3E 50%, #0F1B2D 100%);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(56, 189, 248, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+/* Login Card */
+.login-card {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.25),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+    position: relative;
+    z-index: 1;
+}
+
+/* Header */
+.login-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.brand-logo {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    color: white;
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+.login-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin: 0 0 8px 0;
+    line-height: 1.2;
+}
+
+.login-subtitle {
+    font-size: 14px;
+    color: #94A3B8;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Form */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Form Groups */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #E2E8F0;
+    line-height: 1.4;
+}
+
+.forgot-link {
+    font-size: 12px;
+    color: #3B82F6;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.forgot-link:hover {
+    color: #60A5FA;
+}
+
+/* Input Container */
+.input-container {
+    position: relative;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 16px 12px 44px;
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #FFFFFF;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.form-input::placeholder {
+    color: #64748B;
+}
+
+.form-input:focus {
+    border-color: #3B82F6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background: rgba(30, 41, 59, 0.8);
+}
+
+.form-input.error {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.input-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748B;
+    pointer-events: none;
+}
+
+.form-input:focus + .input-icon {
+    color: #3B82F6;
+}
+
+/* Remember Me */
+.remember-container {
+    margin: 8px 0;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #E2E8F0;
+}
+
+.checkbox-input {
+    display: none;
+}
+
+.checkbox-custom {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #475569;
+    border-radius: 4px;
+    background: rgba(30, 41, 59, 0.6);
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.checkbox-input:checked + .checkbox-custom {
+    background: #3B82F6;
+    border-color: #3B82F6;
+}
+
+.checkbox-input:checked + .checkbox-custom::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.checkbox-text {
+    user-select: none;
+}
+
+/* Login Button */
+.login-button {
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+    border: none;
+    border-radius: 8px;
+    color: #1E293B;
+    padding: 14px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 12px 25px rgba(245, 158, 11, 0.3),
+        0 0 0 1px rgba(245, 158, 11, 0.2);
+}
+
+.login-button:active {
+    transform: translateY(0);
+}
+
+.button-text {
+    font-weight: 600;
+}
+
+.button-icon {
+    transition: transform 0.2s ease;
+}
+
+.login-button:hover .button-icon {
+    transform: translateX(4px);
+}
+
+/* Error Alert */
+.error-alert {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    animation: slideDown 0.3s ease-out;
+}
+
+.error-icon {
+    color: #EF4444;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.error-content {
+    flex: 1;
+}
+
+.error-content strong {
+    display: block;
+    color: #FCA5A5;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.error-content p {
+    color: #FECACA;
+    font-size: 13px;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Sign Up Section */
+.signup-section {
+    text-align: center;
+    margin: 24px 0;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.signup-text {
+    color: #94A3B8;
+    font-size: 14px;
+    margin: 0;
+}
+
+.signup-link {
+    color: #3B82F6;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.signup-link:hover {
+    color: #60A5FA;
+}
+
+/* Social Divider */
+.social-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 24px 0;
+}
+
+.divider-line {
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.divider-text {
+    color: #64748B;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Social Buttons */
+.social-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.social-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(30, 41, 59, 0.6);
+    color: #E2E8F0;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.social-button:hover {
+    background: rgba(30, 41, 59, 0.8);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.google-button:hover {
+    color: #4285F4;
+}
+
+.apple-button:hover {
+    color: #A2AAAD;
+}
+
+/* Animations */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .login-card {
+        padding: 24px;
+        margin: 20px;
+    }
+    
+    .login-title {
+        font-size: 24px;
+    }
+    
+    .brand-logo {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+/* Loading State */
+.login-button.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.login-button.loading .button-text {
+    visibility: hidden;
+}
+
+.login-button.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top: 2px solid #1E293B;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.querySelector('.login-form');
+    const loginButton = document.querySelector('.login-button');
+    const inputs = document.querySelectorAll('.form-input');
+    
+    // Add focus effects
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('focused');
+        });
+        
+        input.addEventListener('blur', function() {
+            this.parentElement.classList.remove('focused');
+        });
+    });
+    
+    // Form submission loading state
+    if (loginForm && loginButton) {
+        loginForm.addEventListener('submit', function() {
+            loginButton.classList.add('loading');
+            loginButton.disabled = true;
+        });
+    }
+    
+    // Real-time validation
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.classList.remove('error');
+            }
+        });
+    });
+    
+    // Add floating animation to card
+    const card = document.querySelector('.login-card');
+    if (card) {
+        card.style.transform = 'translateY(20px)';
+        card.style.opacity = '0';
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s ease';
+            card.style.transform = 'translateY(0)';
+            card.style.opacity = '1';
+        }, 100);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,953 @@
+{% extends 'base.html' %}
+
+{% block title %}Available Loans - VictorLoans{% endblock %}
+
+{% block content %}
+<div class="container-fluid loans-container">
+    <!-- Header Section -->
+    <div class="loans-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center">
+                    <div class="header-icon me-3">
+                        <i class="fas fa-hand-holding-usd"></i>
+                    </div>
+                    <div>
+                        <h1 class="page-title">Available Loan Products</h1>
+                        <p class="page-subtitle">Choose from our variety of loan products designed to meet your financial needs</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="header-stats">
+                    <div class="stat-badge">
+                        <span class="stat-number">{{ loan_types|length }}</span>
+                        <span class="stat-label">Products</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Filters -->
+    <div class="filters-section mb-4">
+        <div class="filters-header">
+            <h6 class="filters-title">
+                <i class="fas fa-filter me-2"></i>
+                Filter by Category
+            </h6>
+        </div>
+        <div class="filters-container">
+            <div class="filter-buttons">
+                <a href="{% url 'loan_list' %}" class="filter-btn {% if not request.GET.category %}active{% endif %}">
+                    <i class="fas fa-layer-group me-2"></i>
+                    All Loans
+                </a>
+                {% for category_code, category_name in categories %}
+                <a href="?category={{ category_code }}" class="filter-btn {% if request.GET.category == category_code %}active{% endif %}">
+                    <i class="fas 
+                        {% if category_code == 'secured' %}fa-home
+                        {% elif category_code == 'unsecured' %}fa-graduation-cap
+                        {% else %}fa-mobile-alt{% endif %} me-2">
+                    </i>
+                    {{ category_name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Loan Products Grid -->
+    <div class="loans-grid">
+        {% if loan_types %}
+            <div class="row">
+                {% for loan_type in loan_types %}
+                <div class="col-xl-4 col-lg-6 mb-4">
+                    <div class="loan-card">
+                        <!-- Card Header -->
+                        <div class="loan-header 
+                            {% if loan_type.category == 'secured' %}category-secured
+                            {% elif loan_type.category == 'unsecured' %}category-unsecured
+                            {% else %}category-mobile{% endif %}">
+                            <div class="loan-category">
+                                <div class="category-icon">
+                                    <i class="fas 
+                                        {% if loan_type.category == 'secured' %}fa-home
+                                        {% elif loan_type.category == 'unsecured' %}fa-graduation-cap
+                                        {% else %}fa-mobile-alt{% endif %}">
+                                    </i>
+                                </div>
+                                <div class="category-info">
+                                    <h4 class="loan-name">{{ loan_type.name }}</h4>
+                                    <span class="category-badge">{{ loan_type.get_category_display }}</span>
+                                </div>
+                            </div>
+                            <div class="loan-popularity">
+                                <div class="popularity-badge">
+                                    <i class="fas fa-star"></i>
+                                    Popular
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="loan-body">
+                            <!-- Description -->
+                            <div class="loan-description">
+                                <p>{{ loan_type.description }}</p>
+                            </div>
+
+                            <!-- Key Features -->
+                            <div class="loan-features">
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-percentage"></i>
+                                    </div>
+                                    <div class="feature-content">
+                                        <label>Interest Rate</label>
+                                        <span class="feature-value">{{ loan_type.interest_rate }}%</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                    </div>
+                                    <div class="feature-content">
+                                        <label>Amount Range</label>
+                                        <span class="feature-value">
+                                            KSh {{ loan_type.min_amount|floatformat:0 }} - {{ loan_type.max_amount|floatformat:0 }}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </div>
+                                    <div class="feature-content">
+                                        <label>Maximum Term</label>
+                                        <span class="feature-value">{{ loan_type.max_term }} months</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Requirements -->
+                            <div class="loan-requirements">
+                                <h6 class="requirements-title">
+                                    <i class="fas fa-clipboard-check me-2"></i>
+                                    Requirements
+                                </h6>
+                                <p class="requirements-text">{{ loan_type.requirements }}</p>
+                            </div>
+
+                            <!-- Quick Stats -->
+                            <div class="loan-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">24h</div>
+                                    <div class="stat-label">Approval</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">98%</div>
+                                    <div class="stat-label">Success Rate</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">1M+</div>
+                                    <div class="stat-label">Borrowers</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Footer -->
+                        <div class="loan-footer">
+                            <div class="loan-actions">
+                                <a href="{% url 'loan_apply' loan_type.id %}" class="btn btn-primary apply-btn">
+                                    <i class="fas fa-paper-plane me-2"></i>
+                                    Apply Now
+                                </a>
+                                <button class="btn btn-outline details-btn" data-bs-toggle="modal" data-bs-target="#loanModal{{ loan_type.id }}">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loan Details Modal -->
+                <div class="modal fade" id="loanModal{{ loan_type.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <div class="modal-title-section">
+                                    <div class="modal-category-icon">
+                                        <i class="fas 
+                                            {% if loan_type.category == 'secured' %}fa-home
+                                            {% elif loan_type.category == 'unsecured' %}fa-graduation-cap
+                                            {% else %}fa-mobile-alt{% endif %}">
+                                        </i>
+                                    </div>
+                                    <div>
+                                        <h5 class="modal-title">{{ loan_type.name }}</h5>
+                                        <span class="modal-subtitle">{{ loan_type.get_category_display }}</span>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="modal-description">
+                                    <p>{{ loan_type.description }}</p>
+                                </div>
+                                
+                                <div class="modal-features">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="feature-detail">
+                                                <label>Interest Rate</label>
+                                                <span class="value">{{ loan_type.interest_rate }}% APR</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="feature-detail">
+                                                <label>Loan Amount</label>
+                                                <span class="value">KSh {{ loan_type.min_amount|floatformat:0 }} - {{ loan_type.max_amount|floatformat:0 }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="feature-detail">
+                                                <label>Maximum Term</label>
+                                                <span class="value">{{ loan_type.max_term }} months</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="feature-detail">
+                                                <label>Processing Time</label>
+                                                <span class="value">24-48 hours</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-requirements">
+                                    <h6>Requirements</h6>
+                                    <p>{{ loan_type.requirements }}</p>
+                                </div>
+
+                                <div class="modal-benefits">
+                                    <h6>Benefits</h6>
+                                    <ul>
+                                        <li>Quick approval process</li>
+                                        <li>Competitive interest rates</li>
+                                        <li>Flexible repayment terms</li>
+                                        <li>No hidden charges</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <a href="{% url 'loan_apply' loan_type.id %}" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-2"></i>Apply Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h4>No Loans Available</h4>
+                <p>We're currently updating our loan products. Please check back later for available options.</p>
+                <div class="empty-actions">
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+/* Bitget Theme Variables */
+:root {
+    --bg-primary: #0B0E11;
+    --bg-secondary: #1E2026;
+    --bg-tertiary: #2B2F36;
+    --border-color: #474D57;
+    --text-primary: #EAECEF;
+    --text-secondary: #B7BDC6;
+    --text-muted: #848E9C;
+    --accent-green: #00C087;
+    --accent-green-hover: #00A875;
+    --accent-yellow: #F0B90B;
+    --accent-red: #F6465D;
+    --accent-blue: #0095FF;
+    --accent-purple: #8A2BE2;
+}
+
+.loans-container {
+    padding: 20px;
+    background: var(--bg-primary);
+    min-height: 100vh;
+}
+
+/* Header Styles */
+.loans-header {
+    padding: 20px 0;
+}
+
+.header-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--accent-green);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-primary);
+    font-size: 1.2rem;
+}
+
+.page-title {
+    color: var(--text-primary);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.page-subtitle {
+    color: var(--text-muted);
+    margin: 5px 0 0 0;
+    font-size: 0.9rem;
+}
+
+.header-stats {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.stat-badge {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 16px;
+    text-align: center;
+    min-width: 100px;
+}
+
+.stat-number {
+    display: block;
+    color: var(--accent-green);
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.stat-label {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+/* Filters Section */
+.filters-section {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.filters-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.filters-title {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.filters-container {
+    padding: 20px;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 16px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+    background: var(--accent-green);
+    border-color: var(--accent-green);
+    color: var(--bg-primary);
+    transform: translateY(-1px);
+}
+
+/* Loan Cards */
+.loan-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.loan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    border-color: var(--accent-green);
+}
+
+/* Card Header */
+.loan-header {
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.loan-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    opacity: 0.1;
+}
+
+.category-secured::before { background: var(--accent-green); }
+.category-unsecured::before { background: var(--accent-yellow); }
+.category-mobile::before { background: var(--accent-blue); }
+
+.loan-category {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    z-index: 2;
+}
+
+.category-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.category-info {
+    flex: 1;
+}
+
+.loan-name {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0 0 5px 0;
+}
+
+.category-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.loan-popularity {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 2;
+}
+
+.popularity-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Card Body */
+.loan-body {
+    padding: 20px;
+}
+
+.loan-description {
+    margin-bottom: 20px;
+}
+
+.loan-description p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.loan-features {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.feature-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--accent-green);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-primary);
+    font-size: 0.9rem;
+}
+
+.feature-content {
+    flex: 1;
+}
+
+.feature-content label {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.feature-value {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.loan-requirements {
+    margin-bottom: 20px;
+}
+
+.requirements-title {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.requirements-text {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.loan-stats {
+    display: flex;
+    gap: 15px;
+    padding: 15px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.stat-item {
+    text-align: center;
+    flex: 1;
+}
+
+.stat-value {
+    color: var(--accent-green);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+}
+
+/* Card Footer */
+.loan-footer {
+    padding: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.loan-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.apply-btn, .details-btn {
+    flex: 1;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 12px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.apply-btn {
+    background: var(--accent-green);
+    color: var(--bg-primary);
+}
+
+.apply-btn:hover {
+    background: var(--accent-green-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 192, 135, 0.3);
+    color: var(--bg-primary);
+}
+
+.details-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.details-btn:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+    transform: translateY(-1px);
+}
+
+/* Modal Styles */
+.modal-content {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--border-color);
+    padding: 20px;
+}
+
+.modal-title-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.modal-category-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--accent-green);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-primary);
+    font-size: 1rem;
+}
+
+.modal-title {
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.modal-subtitle {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-description {
+    margin-bottom: 20px;
+}
+
+.modal-description p {
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.modal-features {
+    margin-bottom: 20px;
+}
+
+.feature-detail {
+    margin-bottom: 15px;
+}
+
+.feature-detail label {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.feature-detail .value {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.modal-requirements,
+.modal-benefits {
+    margin-bottom: 20px;
+}
+
+.modal-requirements h6,
+.modal-benefits h6 {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.modal-requirements p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.modal-benefits ul {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    padding-left: 15px;
+    margin: 0;
+}
+
+.modal-benefits li {
+    margin-bottom: 4px;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-color);
+    padding: 20px;
+}
+
+.btn-close {
+    filter: invert(1);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--bg-tertiary);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 2rem;
+    margin: 0 auto 20px;
+}
+
+.empty-state h4 {
+    color: var(--text-primary);
+    margin: 0 0 10px 0;
+    font-size: 1.3rem;
+}
+
+.empty-state p {
+    color: var(--text-muted);
+    margin: 0 0 25px 0;
+    font-size: 0.95rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.empty-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.btn-outline {
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    background: transparent;
+    border-radius: 8px;
+    padding: 10px 20px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-outline:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+    transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .loans-container {
+        padding: 15px;
+    }
+    
+    .loans-header {
+        text-align: center;
+    }
+    
+    .header-stats {
+        justify-content: center;
+        margin-top: 15px;
+    }
+    
+    .filter-buttons {
+        justify-content: center;
+    }
+    
+    .loan-actions {
+        flex-direction: column;
+    }
+    
+    .loan-stats {
+        flex-wrap: wrap;
+    }
+    
+    .stat-item {
+        flex: 0 0 calc(50% - 8px);
+    }
+}
+
+/* Animation for cards */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.loan-card {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.loan-card:nth-child(1) { animation-delay: 0.1s; }
+.loan-card:nth-child(2) { animation-delay: 0.2s; }
+.loan-card:nth-child(3) { animation-delay: 0.3s; }
+.loan-card:nth-child(4) { animation-delay: 0.4s; }
+.loan-card:nth-child(5) { animation-delay: 0.5s; }
+.loan-card:nth-child(6) { animation-delay: 0.6s; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hover effects to loan cards
+    const loanCards = document.querySelectorAll('.loan-card');
+    loanCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+
+    // Add click animation to apply buttons
+    const applyButtons = document.querySelectorAll('.apply-btn');
+    applyButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            if (!this.getAttribute('href').startsWith('#')) {
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Applying...';
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Apply Now';
+                }, 2000);
+            }
+        });
+    });
+
+    // Filter button active states
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // Modal enhancement
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        modal.addEventListener('shown.bs.modal', function() {
+            this.querySelector('.btn-close').focus();
+        });
+    });
+
+    // Add smooth scrolling for better UX
+    const smoothScroll = (target) => {
+        const element = document.querySelector(target);
+        if (element) {
+            element.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    };
+});
+</script>
+{% endblock %}

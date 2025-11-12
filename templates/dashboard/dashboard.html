@@ -1,0 +1,874 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - VictorLoans{% endblock %}
+
+{% block content %}
+<div class="container-fluid dashboard-container">
+    <!-- Header Section -->
+    <div class="dashboard-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center">
+                    <div class="header-icon me-3">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <div>
+                        <h1 class="dashboard-title">Dashboard</h1>
+                        <p class="dashboard-subtitle">Welcome back, {{ user.first_name|default:user.username }}! Here's your financial overview</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="header-actions">
+                    <a href="{% url 'loan_list' %}" class="btn btn-primary me-2">
+                        <i class="fas fa-plus me-1"></i>Apply Loan
+                    </a>
+                    <a href="{% url 'profile' %}" class="btn btn-outline">
+                        <i class="fas fa-user"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="stat-icon bg-primary">
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ total_applications }}</h3>
+                    <p>Total Applications</p>
+                    <span class="stat-trend positive">
+                        <i class="fas fa-arrow-up"></i> All time
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="stat-icon bg-success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ approved_loans }}</h3>
+                    <p>Approved Loans</p>
+                    <span class="stat-trend positive">
+                        <i class="fas fa-check"></i> Active
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="stat-icon bg-warning">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ pending_applications }}</h3>
+                    <p>Pending Review</p>
+                    <span class="stat-trend warning">
+                        <i class="fas fa-sync"></i> In progress
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="stat-icon bg-info">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>
+                        {% if user.borrowerprofile %}
+                            {{ user.borrowerprofile.credit_score }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </h3>
+                    <p>Credit Score</p>
+                    <span class="stat-trend">
+                        <i class="fas fa-star"></i> Rating
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-xl-8 col-lg-7 mb-4">
+            <!-- Recent Applications -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="card-title">
+                            <i class="fas fa-history me-2"></i>
+                            Recent Applications
+                        </h3>
+                        <a href="{% url 'application_history' %}" class="view-all-link">
+                            View All <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if recent_loans %}
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Loan Type</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for loan in recent_loans %}
+                                <tr>
+                                    <td>
+                                        <div class="loan-info">
+                                            <div class="loan-icon">
+                                                <i class="fas 
+                                                    {% if loan.loan_type.category == 'secured' %}fa-home
+                                                    {% elif loan.loan_type.category == 'unsecured' %}fa-graduation-cap
+                                                    {% else %}fa-mobile-alt{% endif %}">
+                                                </i>
+                                            </div>
+                                            <div class="loan-details">
+                                                <strong>{{ loan.loan_type.name }}</strong>
+                                                <span>{{ loan.loan_type.get_category_display }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="amount">KSh {{ loan.amount|floatformat:2 }}</td>
+                                    <td>
+                                        <span class="status-badge status-{{ loan.status }}">
+                                            <i class="fas 
+                                                {% if loan.status == 'approved' %}fa-check
+                                                {% elif loan.status == 'rejected' %}fa-times
+                                                {% elif loan.status == 'pending' %}fa-clock
+                                                {% else %}fa-sync{% endif %} me-1">
+                                            </i>
+                                            {{ loan.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td class="date">{{ loan.application_date|date:"M d, Y" }}</td>
+                                    <td class="text-end">
+                                        <a href="{% url 'loan_detail' loan.id %}" class="action-btn">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h4>No Applications Yet</h4>
+                        <p>Start by applying for your first loan to get started</p>
+                        <a href="{% url 'loan_list' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Apply for Loan
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-xl-4 col-lg-5">
+            <!-- Quick Actions -->
+            <div class="dashboard-card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-bolt me-2"></i>
+                        Quick Actions
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="action-buttons">
+                        <a href="{% url 'loan_list' %}" class="action-button primary">
+                            <div class="action-icon">
+                                <i class="fas fa-hand-holding-usd"></i>
+                            </div>
+                            <div class="action-content">
+                                <span>Apply for Loan</span>
+                                <small>Get instant approval</small>
+                            </div>
+                            <i class="fas fa-chevron-right action-arrow"></i>
+                        </a>
+                        
+                        <a href="{% url 'profile' %}" class="action-button">
+                            <div class="action-icon">
+                                <i class="fas fa-user-cog"></i>
+                            </div>
+                            <div class="action-content">
+                                <span>Update Profile</span>
+                                <small>Manage information</small>
+                            </div>
+                            <i class="fas fa-chevron-right action-arrow"></i>
+                        </a>
+                        
+                        <a href="{% url 'application_history' %}" class="action-button">
+                            <div class="action-icon">
+                                <i class="fas fa-history"></i>
+                            </div>
+                            <div class="action-content">
+                                <span>Application History</span>
+                                <small>View all records</small>
+                            </div>
+                            <i class="fas fa-chevron-right action-arrow"></i>
+                        </a>
+                        
+                        {% if not user.borrowerprofile %}
+                        <a href="{% url 'profile_update' %}" class="action-button warning">
+                            <div class="action-icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="action-content">
+                                <span>Complete Profile</span>
+                                <small>Required for loans</small>
+                            </div>
+                            <i class="fas fa-chevron-right action-arrow"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="card-title">
+                            <i class="fas fa-bell me-2"></i>
+                            Notifications
+                            {% if unread_notifications %}
+                            <span class="notification-count">{{ unread_notifications|length }}</span>
+                            {% endif %}
+                        </h3>
+                        <a href="{% url 'notifications' %}" class="view-all-link">
+                            View All
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if unread_notifications %}
+                    <div class="notifications-list">
+                        {% for notification in unread_notifications|slice:":3" %}
+                        <div class="notification-item">
+                            <div class="notification-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h6>{{ notification.title }}</h6>
+                                <p>{{ notification.message }}</p>
+                                <span class="notification-time">{{ notification.created_at|timesince }} ago</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state small">
+                        <div class="empty-icon">
+                            <i class="fas fa-bell-slash"></i>
+                        </div>
+                        <h6>No New Notifications</h6>
+                        <p>You're all caught up!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Bitget Theme Variables */
+:root {
+    --bg-primary: #0B0E11;
+    --bg-secondary: #1E2026;
+    --bg-tertiary: #2B2F36;
+    --border-color: #474D57;
+    --text-primary: #EAECEF;
+    --text-secondary: #B7BDC6;
+    --text-muted: #848E9C;
+    --accent-green: #00C087;
+    --accent-green-hover: #00A875;
+    --accent-yellow: #F0B90B;
+    --accent-red: #F6465D;
+    --accent-blue: #0095FF;
+}
+
+.dashboard-container {
+    padding: 20px;
+    background: var(--bg-primary);
+    min-height: 100vh;
+}
+
+/* Header Styles */
+.dashboard-header {
+    padding: 20px 0;
+}
+
+.header-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--accent-green);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-primary);
+    font-size: 1.2rem;
+}
+
+.dashboard-title {
+    color: var(--text-primary);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.dashboard-subtitle {
+    color: var(--text-muted);
+    margin: 5px 0 0 0;
+    font-size: 0.9rem;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* Stat Cards */
+.stat-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    border-color: var(--accent-green);
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.stat-icon.bg-primary { background: var(--accent-green); }
+.stat-icon.bg-success { background: var(--accent-green); }
+.stat-icon.bg-warning { background: var(--accent-yellow); }
+.stat-icon.bg-info { background: var(--accent-blue); }
+
+.stat-content h3 {
+    color: var(--text-primary);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0 0 5px 0;
+}
+
+.stat-content p {
+    color: var(--text-secondary);
+    margin: 0 0 8px 0;
+    font-size: 0.9rem;
+}
+
+.stat-trend {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(0, 192, 135, 0.1);
+    color: var(--accent-green);
+}
+
+.stat-trend.warning {
+    background: rgba(240, 185, 11, 0.1);
+    color: var(--accent-yellow);
+}
+
+/* Dashboard Cards */
+.dashboard-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 20px 20px 0;
+    border-bottom: 1px solid var(--border-color);
+    background: transparent;
+}
+
+.card-title {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.view-all-link {
+    color: var(--accent-green);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.view-all-link:hover {
+    color: var(--accent-green-hover);
+}
+
+/* Table Styles */
+.table-container {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th {
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table td {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.data-table tr:last-child td {
+    border-bottom: none;
+}
+
+.data-table tr:hover {
+    background: var(--bg-tertiary);
+}
+
+/* Loan Info */
+.loan-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.loan-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-green);
+}
+
+.loan-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.loan-details strong {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.loan-details span {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.amount {
+    color: var(--text-primary) !important;
+    font-weight: 600;
+}
+
+.date {
+    color: var(--text-muted) !important;
+    font-size: 0.9rem;
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+}
+
+.status-approved {
+    background: rgba(0, 192, 135, 0.1);
+    color: var(--accent-green);
+}
+
+.status-pending {
+    background: rgba(240, 185, 11, 0.1);
+    color: var(--accent-yellow);
+}
+
+.status-rejected {
+    background: rgba(246, 70, 93, 0.1);
+    color: var(--accent-red);
+}
+
+/* Action Button */
+.action-btn {
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 6px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+    color: var(--accent-green);
+    background: var(--bg-tertiary);
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.action-button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.action-button:hover {
+    border-color: var(--accent-green);
+    transform: translateX(5px);
+    color: var(--text-primary);
+}
+
+.action-button.primary {
+    border-color: var(--accent-green);
+    background: rgba(0, 192, 135, 0.05);
+}
+
+.action-button.warning {
+    border-color: var(--accent-yellow);
+    background: rgba(240, 185, 11, 0.05);
+}
+
+.action-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-green);
+}
+
+.action-button.primary .action-icon {
+    background: var(--accent-green);
+    color: var(--bg-primary);
+}
+
+.action-button.warning .action-icon {
+    background: var(--accent-yellow);
+    color: var(--bg-primary);
+}
+
+.action-content {
+    flex: 1;
+}
+
+.action-content span {
+    display: block;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.action-content small {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.action-arrow {
+    color: var(--text-muted);
+    transition: all 0.3s ease;
+}
+
+.action-button:hover .action-arrow {
+    color: var(--accent-green);
+    transform: translateX(3px);
+}
+
+/* Notifications */
+.notification-count {
+    background: var(--accent-red);
+    color: white;
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    margin-left: 8px;
+}
+
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.notification-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.notification-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.notification-icon {
+    width: 32px;
+    height: 32px;
+    background: rgba(0, 192, 135, 0.1);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-green);
+    font-size: 0.8rem;
+}
+
+.notification-content h6 {
+    color: var(--text-primary);
+    margin: 0 0 4px 0;
+    font-size: 0.9rem;
+}
+
+.notification-content p {
+    color: var(--text-secondary);
+    margin: 0 0 4px 0;
+    font-size: 0.8rem;
+}
+
+.notification-time {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+}
+
+/* Empty States */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.empty-state.small {
+    padding: 30px 20px;
+}
+
+.empty-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--bg-tertiary);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    margin: 0 auto 20px;
+}
+
+.empty-state.small .empty-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    margin-bottom: 15px;
+}
+
+.empty-state h4 {
+    color: var(--text-primary);
+    margin: 0 0 10px 0;
+}
+
+.empty-state h6 {
+    color: var(--text-primary);
+    margin: 0 0 8px 0;
+}
+
+.empty-state p {
+    color: var(--text-muted);
+    margin: 0 0 20px 0;
+}
+
+.empty-state.small p {
+    margin-bottom: 0;
+}
+
+/* Button Styles */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 10px 20px;
+    border: none;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-primary {
+    background: var(--accent-green);
+    color: var(--bg-primary);
+}
+
+.btn-primary:hover {
+    background: var(--accent-green-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 192, 135, 0.3);
+    color: var(--bg-primary);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 10px 12px;
+}
+
+.btn-outline:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 15px;
+    }
+    
+    .dashboard-header {
+        text-align: center;
+    }
+    
+    .header-actions {
+        justify-content: center;
+        margin-top: 15px;
+    }
+    
+    .stat-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 15px;
+    }
+    
+    .data-table {
+        font-size: 0.8rem;
+    }
+    
+    .loan-info {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+    }
+    
+    .action-button {
+        padding: 12px;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate stat numbers
+    const statNumbers = document.querySelectorAll('.stat-content h3');
+    statNumbers.forEach(number => {
+        const value = number.textContent.trim();
+        if (value !== 'N/A' && !isNaN(value)) {
+            const target = parseInt(value);
+            let current = 0;
+            const increment = target / 30;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    number.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    number.textContent = Math.floor(current);
+                }
+            }, 40);
+        }
+    });
+    
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.dashboard-card, .stat-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    // Auto-refresh notifications every 30 seconds
+    setInterval(() => {
+        // In production, this would fetch new notifications from the server
+        console.log('Checking for new notifications...');
+    }, 30000);
+});
+</script>
+{% endblock %}

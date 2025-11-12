@@ -1,0 +1,1065 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}VictorLoans - Your Trusted Loan Partner{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #00C087;
+            --primary-hover: #00A875;
+            --secondary: #6C757D;
+            --success: #00C087;
+            --warning: #F0B90B;
+            --danger: #F6465D;
+            --info: #0095FF;
+            --light: #1E2026;
+            --dark: #0B0E11;
+            --gray-100: #1E2026;
+            --gray-200: #2B2F36;
+            --gray-300: #474D57;
+            --gray-400: #848E9C;
+            --gray-500: #B7BDC6;
+            --gray-600: #EAECEF;
+            --gray-700: #F5F5F5;
+            --gray-800: #FAFAFA;
+            --gray-900: #FFFFFF;
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --bg-gradient: linear-gradient(135deg, #0B0E11 0%, #1E2026 100%);
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-primary);
+            background-color: var(--dark);
+            color: var(--gray-500);
+            line-height: 1.6;
+            font-weight: 400;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 600;
+            color: var(--gray-900);
+            letter-spacing: -0.02em;
+        }
+        
+        /* Header & Navigation - Bitget Style */
+        .header {
+            background: var(--dark);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sitename {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+        
+        .navmenu {
+            margin: 0;
+        }
+        
+        .navmenu ul {
+            display: flex;
+            list-style: none;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .navmenu li {
+            position: relative;
+            white-space: nowrap;
+            margin: 0 8px;
+        }
+        
+        .navmenu a {
+            color: var(--gray-500);
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 12px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+            border-radius: 6px;
+        }
+        
+        .navmenu a:hover,
+        .navmenu .active,
+        .navmenu li:hover > a {
+            color: var(--primary);
+            background-color: rgba(0, 192, 135, 0.08);
+        }
+        
+        .navmenu .dropdown ul {
+            display: block;
+            position: absolute;
+            left: 0;
+            top: calc(100% + 8px);
+            margin: 0;
+            padding: 8px 0;
+            z-index: 99;
+            opacity: 0;
+            visibility: hidden;
+            background: var(--gray-100);
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
+            min-width: 200px;
+        }
+        
+        .navmenu .dropdown ul li {
+            min-width: 200px;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .navmenu .dropdown ul a {
+            padding: 10px 16px;
+            font-size: 14px;
+            color: var(--gray-500);
+            border-radius: 0;
+        }
+        
+        .navmenu .dropdown ul a:hover,
+        .navmenu .dropdown ul .active:hover,
+        .navmenu .dropdown ul li:hover > a {
+            color: var(--primary);
+            background-color: rgba(0, 192, 135, 0.08);
+        }
+        
+        .navmenu .dropdown:hover > ul {
+            opacity: 1;
+            top: 100%;
+            visibility: visible;
+        }
+        
+        .navmenu .dropdown .dropdown ul {
+            top: 0;
+            left: calc(100% - 8px);
+            visibility: hidden;
+        }
+        
+        .navmenu .dropdown .dropdown:hover > ul {
+            opacity: 1;
+            top: 0;
+            left: 100%;
+            visibility: visible;
+        }
+        
+        .mobile-nav-toggle {
+            color: var(--gray-500);
+            font-size: 24px;
+            cursor: pointer;
+            line-height: 0;
+            transition: 0.3s;
+            display: none;
+            padding: 8px;
+            border-radius: 6px;
+        }
+        
+        .mobile-nav-toggle:hover {
+            background-color: var(--gray-200);
+        }
+        
+        .btn-getstarted {
+            background: var(--primary);
+            color: var(--dark);
+            border-radius: 6px;
+            padding: 10px 20px;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            text-decoration: none;
+            border: none;
+            box-shadow: 0px 1px 2px rgba(11, 14, 17, 0.05);
+        }
+        
+        .btn-getstarted:hover {
+            background: var(--primary-hover);
+            color: var(--dark);
+            transform: translateY(-1px);
+            box-shadow: 0px 4px 8px rgba(0, 192, 135, 0.3);
+        }
+        
+        /* User Profile Styles */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .user-info:hover {
+            background-color: var(--gray-200);
+        }
+        
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-name {
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--gray-800);
+        }
+        
+        .user-role {
+            font-size: 12px;
+            color: var(--gray-400);
+        }
+        
+        .profile-picture-nav {
+            width: 32px;
+            height: 32px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 1px solid var(--gray-300);
+        }
+        
+        /* Dropdown Menu */
+        .dropdown-menu {
+            border: 1px solid var(--gray-200);
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 8px 0;
+            margin-top: 8px;
+            background: var(--gray-100);
+        }
+        
+        .dropdown-item {
+            padding: 8px 16px;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            color: var(--gray-500);
+            display: flex;
+            align-items: center;
+        }
+        
+        .dropdown-item i {
+            width: 16px;
+            margin-right: 8px;
+            text-align: center;
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(0, 192, 135, 0.08);
+            color: var(--primary);
+        }
+        
+        /* Section Styles */
+        .section {
+            padding: 80px 0;
+            overflow: hidden;
+        }
+        
+        .section-title {
+            text-align: center;
+            padding-bottom: 40px;
+        }
+        
+        .section-title h2 {
+            font-size: 36px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--gray-900);
+            letter-spacing: -0.02em;
+        }
+        
+        .section-title p {
+            font-size: 18px;
+            color: var(--gray-400);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            background: var(--bg-gradient);
+            color: var(--gray-900);
+            padding: 120px 0 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 192, 135, 0.05) 0%, rgba(240, 185, 11, 0.05) 100%);
+            z-index: -1;
+        }
+        
+        .hero-section h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--gray-900);
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+        }
+        
+        .hero-section p {
+            font-size: 20px;
+            margin-bottom: 40px;
+            color: var(--gray-400);
+            max-width: 600px;
+        }
+        
+        .btn-get-started {
+            font-weight: 600;
+            font-size: 16px;
+            letter-spacing: 0;
+            display: inline-block;
+            padding: 14px 32px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            color: var(--dark);
+            background: var(--primary);
+            border: none;
+            text-decoration: none;
+            box-shadow: 0px 1px 2px rgba(11, 14, 17, 0.05);
+        }
+        
+        .btn-get-started:hover {
+            background: var(--primary-hover);
+            color: var(--dark);
+            transform: translateY(-2px);
+            box-shadow: 0px 8px 16px rgba(0, 192, 135, 0.3);
+        }
+        
+        .btn-outline-primary {
+            font-weight: 600;
+            font-size: 16px;
+            letter-spacing: 0;
+            display: inline-block;
+            padding: 14px 32px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            color: var(--primary);
+            background: transparent;
+            border: 1px solid var(--primary);
+            text-decoration: none;
+            margin-left: 16px;
+        }
+        
+        .btn-outline-primary:hover {
+            background: rgba(0, 192, 135, 0.08);
+            color: var(--primary);
+        }
+        
+        /* Cards */
+        .feature-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            box-shadow: 0px 1px 3px rgba(11, 14, 17, 0.1);
+            height: 100%;
+            background: var(--gray-100);
+            overflow: hidden;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0px 12px 24px rgba(11, 14, 17, 0.2);
+            border-color: var(--primary);
+        }
+        
+        .loan-card {
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+            box-shadow: 0px 1px 3px rgba(11, 14, 17, 0.1);
+            background: var(--gray-100);
+            overflow: hidden;
+        }
+        
+        .loan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 8px 16px rgba(11, 14, 17, 0.2);
+            border-color: var(--primary);
+        }
+        
+        .stat-card {
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+            box-shadow: 0px 1px 3px rgba(11, 14, 17, 0.1);
+            background: var(--gray-100);
+            padding: 24px;
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            padding: 12px 24px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0px 1px 2px rgba(11, 14, 17, 0.05);
+            color: var(--dark);
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0px 4px 8px rgba(0, 192, 135, 0.3);
+            color: var(--dark);
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: var(--gray-400);
+            font-size: 14px;
+            padding: 60px 0 20px;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .footer-top {
+            padding-bottom: 40px;
+        }
+        
+        .footer-about h4 {
+            font-size: 20px;
+            margin: 0 0 20px 0;
+            padding: 0;
+            line-height: 1;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+        
+        .footer-links h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+            position: relative;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .footer-links h4::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 30px;
+            height: 2px;
+            background: var(--primary);
+        }
+        
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-links ul li {
+            padding: 6px 0;
+        }
+        
+        .footer-links ul a {
+            color: var(--gray-400);
+            text-decoration: none;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+        
+        .footer-links ul a:hover {
+            color: var(--primary);
+        }
+        
+        .footer-contact p {
+            margin-bottom: 8px;
+            color: var(--gray-400);
+            font-size: 14px;
+        }
+        
+        .social-links a {
+            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--gray-400);
+            line-height: 1;
+            padding: 8px;
+            margin-right: 8px;
+            border-radius: 6px;
+            text-align: center;
+            width: 36px;
+            height: 36px;
+            transition: 0.3s;
+        }
+        
+        .social-links a:hover {
+            background: var(--primary);
+            color: var(--dark);
+            transform: translateY(-2px);
+        }
+        
+        .footer-newsletter h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 16px;
+        }
+        
+        .footer-newsletter p {
+            color: var(--gray-400);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid var(--gray-200);
+            color: var(--gray-400);
+            font-size: 14px;
+        }
+        
+        .credits {
+            padding-top: 8px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--gray-400);
+        }
+        
+        /* Badges & Indicators */
+        .badge {
+            font-weight: 500;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 16px;
+        }
+        
+        /* Alert Styles */
+        .alert {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0px 2px 4px rgba(11, 14, 17, 0.1);
+        }
+        
+        .alert-success {
+            background-color: rgba(0, 192, 135, 0.1);
+            color: var(--success);
+            border-left: 4px solid var(--success);
+        }
+        
+        .alert-danger {
+            background-color: rgba(246, 70, 93, 0.1);
+            color: var(--danger);
+            border-left: 4px solid var(--danger);
+        }
+        
+        .alert-warning {
+            background-color: rgba(240, 185, 11, 0.1);
+            color: var(--warning);
+            border-left: 4px solid var(--warning);
+        }
+        
+        .alert-info {
+            background-color: rgba(0, 149, 255, 0.1);
+            color: var(--info);
+            border-left: 4px solid var(--info);
+        }
+        
+        /* Bitget-specific styles */
+        .bg-primary-gradient {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--success) 100%) !important;
+        }
+        
+        .btn-primary-gradient {
+            background: linear-gradient(135deg, var(--primary) 0%, #00A875 100%);
+            border: none;
+            color: var(--dark);
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary-gradient:hover {
+            background: linear-gradient(135deg, #00A875 0%, #009966 100%);
+            transform: translateY(-2px);
+            box-shadow: 0px 8px 16px rgba(0, 192, 135, 0.3);
+            color: var(--dark);
+        }
+        
+        .bg-dark-100 { background-color: var(--dark) !important; }
+        .bg-dark-200 { background-color: var(--gray-100) !important; }
+        .bg-dark-300 { background-color: var(--gray-200) !important; }
+        .text-light-200 { color: var(--gray-400) !important; }
+        
+        /* Responsive */
+        @media (max-width: 1199px) {
+            .navmenu li {
+                margin: 0 4px;
+            }
+        }
+        
+        @media (max-width: 991px) {
+            .mobile-nav-toggle {
+                display: block;
+            }
+            
+            .navmenu {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 280px;
+                height: 100%;
+                padding: 80px 20px 30px;
+                overflow-y: auto;
+                transition: 0.3s;
+                background: var(--gray-100);
+                box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+                z-index: 9998;
+            }
+            
+            .navmenu ul {
+                display: block;
+                padding: 0;
+            }
+            
+            .navmenu li {
+                padding: 0;
+                margin: 0 0 8px 0;
+            }
+            
+            .navmenu a {
+                padding: 12px 16px;
+                border-radius: 8px;
+            }
+            
+            .navmenu .dropdown .dropdown ul {
+                position: static;
+                display: none;
+                padding: 8px 0;
+                margin: 8px 0 8px 16px;
+                background: var(--gray-200);
+                border: none;
+                box-shadow: none;
+            }
+            
+            .navmenu > ul > li > a:after {
+                display: none;
+            }
+            
+            .navmenu-active {
+                right: 0;
+            }
+            
+            .hero-section h1 {
+                font-size: 36px;
+            }
+            
+            .hero-section p {
+                font-size: 18px;
+            }
+            
+            .btn-outline-primary {
+                margin-left: 0;
+                margin-top: 16px;
+                display: block;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 100px 0 60px;
+            }
+            
+            .hero-section h1 {
+                font-size: 32px;
+            }
+            
+            .section {
+                padding: 60px 0;
+            }
+            
+            .section-title h2 {
+                font-size: 28px;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="index-page">
+
+    <!-- Header -->
+    <header id="header" class="header d-flex align-items-center sticky-top">
+        <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+            <a href="{% url 'home' %}" class="logo d-flex align-items-center">
+                <h1 class="sitename">VictorLoans</h1>
+            </a>
+
+            <nav id="navmenu" class="navmenu">
+                <ul>
+                    <li><a href="{% url 'home' %}" class="active">Home</a></li>
+                    <li><a href="{% url 'home' %}#features">Features</a></li>
+                    <li><a href="{% url 'home' %}#loans">Loan Products</a></li>
+                    <li><a href="{% url 'home' %}#how-it-works">How It Works</a></li>
+                    <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    
+                    {% if user.is_authenticated %}
+                    <li class="dropdown">
+    <a href="#" class="dropdown-toggle">
+        <div class="user-info">
+            {% if user.borrowerprofile.profile_picture and user.borrowerprofile.has_profile_picture %}
+                <img src="{{ user.borrowerprofile.profile_picture.url }}" 
+                     alt="Profile Picture" 
+                     class="profile-picture-nav">
+            {% else %}
+                <div class="profile-picture-placeholder">
+                    <i class="fas fa-user"></i>
+                </div>
+            {% endif %}
+            <div class="user-details d-none d-md-flex">
+                <span class="user-name">{{ user.first_name|default:user.username }}</span>
+                <span class="user-role">Account</span>
+            </div>
+            <i class="fas fa-chevron-down dropdown-arrow"></i>
+        </div>
+    </a>
+    <ul class="dropdown-menu">
+        <li><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a></li>
+        <li><a href="{% url 'profile' %}"><i class="fas fa-user-circle me-2"></i> My Profile</a></li>
+        <li><a href="{% url 'application_history' %}"><i class="fas fa-file-alt me-2"></i> My Applications</a></li>
+        <li>
+            <a href="{% url 'notifications' %}">
+                <i class="fas fa-bell me-2"></i> Notifications
+                {% if user.notification_set.count > 0 %}
+                    <span class="notification-badge">
+                        {{ user.notification_set.count }}
+                    </span>
+                {% endif %}
+            </a>
+        </li>
+        <li><div class="dropdown-divider"></div></li>
+        <li><a href="{% url 'account_logout' %}" class="logout-link"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+    </ul>
+</li>
+                    {% else %}
+                    <li><a href="{% url 'account_login' %}">Login</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+
+            <div class="d-flex align-items-center">
+                {% if not user.is_authenticated %}
+                <a class="btn-getstarted d-none d-md-inline-block" href="{% url 'account_signup' %}">Get Started</a>
+                {% endif %}
+                <i class="mobile-nav-toggle d-xl-none fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                <div class="d-flex align-items-center">
+                    {% if message.tags == 'success' %}
+                    <i class="fas fa-check-circle me-2"></i>
+                    {% elif message.tags == 'error' or message.tags == 'danger' %}
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    {% elif message.tags == 'warning' %}
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    {% elif message.tags == 'info' %}
+                    <i class="fas fa-info-circle me-2"></i>
+                    {% endif %}
+                    <div>{{ message }}</div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" style="filter: invert(1);"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="main">
+        {% block content %}
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container">
+                <div class="row align-items-center min-vh-100 py-5">
+                    <div class="col-lg-6">
+                        <div class="hero-content">
+                            <div class="badge bg-primary-20 text-primary mb-3 px-3 py-2 rounded-pill d-inline-flex align-items-center">
+                                <i class="fas fa-bolt me-2 small"></i>
+                                <span>Fast & Secure Loans</span>
+                            </div>
+                            <h1 class="hero-title mb-4">Get The Financial Support You <span class="text-gradient">Need</span></h1>
+                            <p class="hero-subtitle mb-4">Quick, secure, and transparent loan services with competitive rates. From personal loans to education financing, we provide reliable financial solutions.</p>
+                            <div class="d-flex flex-wrap gap-3 mb-4">
+                                {% if user.is_authenticated %}
+                                    <a href="{% url 'dashboard' %}" class="btn btn-primary-gradient btn-lg px-4 py-3">
+                                        <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'account_signup' %}" class="btn btn-primary-gradient btn-lg px-4 py-3">
+                                        <i class="fas fa-rocket me-2"></i>Get Started Now
+                                    </a>
+                                {% endif %}
+                                <a href="#loans" class="btn btn-outline-light btn-lg px-4 py-3">
+                                    <i class="fas fa-search me-2"></i>Explore Loans
+                                </a>
+                            </div>
+                            <div class="mt-4 d-flex flex-wrap gap-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="feature-badge bg-success-20 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">
+                                        <i class="fas fa-check-circle text-success small"></i>
+                                    </div>
+                                    <span class="text-light">Fast Approval</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="feature-badge bg-success-20 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">
+                                        <i class="fas fa-check-circle text-success small"></i>
+                                    </div>
+                                    <span class="text-light">No Hidden Fees</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="feature-badge bg-success-20 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">
+                                        <i class="fas fa-check-circle text-success small"></i>
+                                    </div>
+                                    <span class="text-light">Secure & Safe</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="hero-card-container position-relative">
+                            <!-- Main Hero Card -->
+                            <div class="hero-card bg-dark-200 border border-dark-300 rounded-4 shadow-lg p-4 mx-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary-20 rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-wallet text-primary fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-light-200 small">Available Credit</div>
+                                            <div class="fw-bold text-white h5 mb-0">KSh 150,000</div>
+                                        </div>
+                                    </div>
+                                    <div class="badge bg-success rounded-pill px-3 py-2">
+                                        <i class="fas fa-check-circle me-1"></i>Active
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-dark-300 rounded-3 p-4 mb-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="text-light-200">Loan Amount</span>
+                                        <span class="fw-bold text-white h5 mb-0">KSh 50,000</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-light-200">Monthly Payment</span>
+                                        <span class="fw-bold text-white h5 mb-0">KSh 4,200</span>
+                                    </div>
+                                </div>
+                                
+                                <button class="btn btn-primary-gradient w-100 py-3">
+                                    <i class="fas fa-bolt me-2"></i>Apply Instantly
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="section bg-dark-100">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <h2 class="section-title mb-3">Why Choose VictorLoans?</h2>
+                    <p class="section-subtitle">We're committed to making your loan experience simple and stress-free</p>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card feature-card h-100 border-dark-300 bg-dark-200">
+                            <div class="card-body text-center p-4">
+                                <div class="icon-container bg-primary-20 rounded-3 d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-bolt fa-2x text-primary"></i>
+                                </div>
+                                <h5 class="card-title mb-3 text-white">Lightning Fast Processing</h5>
+                                <p class="card-text text-light-200">Get loan decisions in hours, not days. Our streamlined process ensures quick approval and disbursement.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card feature-card h-100 border-dark-300 bg-dark-200">
+                            <div class="card-body text-center p-4">
+                                <div class="icon-container bg-success-20 rounded-3 d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-shield-alt fa-2x text-success"></i>
+                                </div>
+                                <h5 class="card-title mb-3 text-white">Bank-Level Security</h5>
+                                <p class="card-text text-light-200">Your data is protected with 256-bit SSL encryption. We follow strict security protocols to keep your information safe.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card feature-card h-100 border-dark-300 bg-dark-200">
+                            <div class="card-body text-center p-4">
+                                <div class="icon-container bg-warning-20 rounded-3 d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-percentage fa-2x text-warning"></i>
+                                </div>
+                                <h5 class="card-title mb-3 text-white">Competitive Rates</h5>
+                                <p class="card-text text-light-200">Enjoy competitive interest rates with transparent pricing. No hidden fees or surprise charges.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer id="footer" class="footer">
+        <div class="container footer-top">
+            <div class="row gy-4">
+                <div class="col-lg-4 col-md-6 footer-about">
+                    <a href="{% url 'home' %}" class="logo d-flex align-items-center mb-3">
+                        <span class="sitename" style="color: var(--primary);">VictorLoans</span>
+                    </a>
+                    <p class="mb-3" style="color: var(--gray-400);">Your trusted partner for fast, secure, and transparent loan services.</p>
+                    <div class="footer-contact pt-3">
+                        <p class="mb-1">Nairobi, Kenya</p>
+                        <p class="mb-1"><strong>Phone:</strong> <span>+10 673 567 367</span></p>
+                        <p class="mb-3"><strong>Email:</strong> <span>support@VictorLoans.com</span></p>
+                    </div>
+                    <div class="social-links d-flex mt-4">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-3 footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'loan_list' %}">Loans</a></li>
+                        <li><a href="{% url 'home' %}#how-it-works">How It Works</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-3 footer-links">
+                    <h4>Our Services</h4>
+                    <ul>
+                        <li><a href="#">Personal Loans</a></li>
+                        <li><a href="#">Business Loans</a></li>
+                        <li><a href="#">Emergency Loans</a></li>
+                        <li><a href="#">Education Loans</a></li>
+                        <li><a href="#">Home Improvement</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-4 col-md-12 footer-newsletter">
+                    <h4>Security & Trust</h4>
+                    <p>We use bank-level encryption and security protocols to ensure your data is always protected.</p>
+                    <div class="d-flex align-items-center mt-3">
+                        <i class="fas fa-shield-alt me-2" style="color: var(--success);"></i>
+                        <span>256-bit SSL Encryption</span>
+                    </div>
+                    <div class="d-flex align-items-center mt-2">
+                        <i class="fas fa-lock me-2" style="color: var(--success);"></i>
+                        <span>Secure Data Handling</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container copyright text-center mt-4">
+            <p>© <span>Copyright</span> <strong class="px-1" style="color: var(--primary);">VictorLoans</strong> <span>All Rights Reserved</span></p>
+            <div class="credits">
+                Designed with <i class="fas fa-heart" style="color: var(--danger);"></i> for our customers
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Mobile navigation toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
+            const navmenu = document.querySelector('#navmenu');
+            
+            if (mobileNavToggle) {
+                mobileNavToggle.addEventListener('click', function(e) {
+                    navmenu.classList.toggle('navmenu-active');
+                    mobileNavToggle.classList.toggle('fa-bars');
+                    mobileNavToggle.classList.toggle('fa-times');
+                });
+            }
+            
+            // Close mobile menu when clicking on a nav link
+            document.querySelectorAll('#navmenu a').forEach(navLink => {
+                navLink.addEventListener('click', () => {
+                    if (navmenu.classList.contains('navmenu-active')) {
+                        navmenu.classList.remove('navmenu-active');
+                        mobileNavToggle.classList.add('fa-bars');
+                        mobileNavToggle.classList.remove('fa-times');
+                    }
+                });
+            });
+            
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('#navmenu') && !e.target.closest('.mobile-nav-toggle') && navmenu.classList.contains('navmenu-active')) {
+                    navmenu.classList.remove('navmenu-active');
+                    mobileNavToggle.classList.add('fa-bars');
+                    mobileNavToggle.classList.remove('fa-times');
+                }
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

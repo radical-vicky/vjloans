@@ -1,0 +1,828 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Withdraw Loan - QuickLoan{% endblock %}
+
+{% block content %}
+<div class="container-fluid withdraw-container">
+    <!-- Header Section -->
+    <div class="withdraw-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center">
+                    <div class="header-icon me-3">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div>
+                        <h1 class="page-title">Withdraw Loan Funds</h1>
+                        <p class="page-subtitle">Transfer approved loan amount to your M-Pesa account</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="header-actions">
+                    <a href="{% url 'loan_detail' loan_application.id %}" class="btn btn-outline">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Loan
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10">
+            <!-- Loan Summary Card -->
+            <div class="dashboard-card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-file-invoice-dollar me-2"></i>
+                        Loan Summary
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="loan-summary-grid">
+                        <div class="summary-item">
+                            <div class="summary-icon">
+                                <i class="fas fa-hand-holding-usd"></i>
+                            </div>
+                            <div class="summary-content">
+                                <label>Loan Type</label>
+                                <strong>{{ loan_application.loan_type.name }}</strong>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-icon">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="summary-content">
+                                <label>Approved Amount</label>
+                                <strong class="text-primary">KSh {{ loan_application.amount|floatformat:2 }}</strong>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-icon">
+                                <i class="fas fa-percentage"></i>
+                            </div>
+                            <div class="summary-content">
+                                <label>Interest Rate</label>
+                                <strong>{{ loan_application.loan_type.interest_rate }}%</strong>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="summary-content">
+                                <label>Term</label>
+                                <strong>{{ loan_application.term_months }} months</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Withdrawal Form -->
+                <div class="col-lg-8">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-mobile-alt me-2"></i>
+                                M-Pesa Withdrawal Details
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" class="withdraw-form">
+                                {% csrf_token %}
+                                
+                                <!-- Form Fields -->
+                                <div class="form-section">
+                                    <h5 class="section-title">Enter M-Pesa Information</h5>
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            {{ form.mpesa_number|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                    <div class="form-info">
+                                        <i class="fas fa-info-circle"></i>
+                                        <span>Ensure your M-Pesa number is registered and active. Funds will be sent within 5 minutes.</span>
+                                    </div>
+                                </div>
+
+                                <!-- Amount Confirmation -->
+                                <div class="amount-section">
+                                    <div class="amount-card">
+                                        <div class="amount-icon">
+                                            <i class="fas fa-money-check"></i>
+                                        </div>
+                                        <div class="amount-content">
+                                            <label>Withdrawal Amount</label>
+                                            <div class="amount-value">KSh {{ loan_application.amount|floatformat:2 }}</div>
+                                            <small>Full approved loan amount</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Important Notes -->
+                                <div class="notes-section">
+                                    <h6 class="notes-title">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        Important Information
+                                    </h6>
+                                    <div class="notes-list">
+                                        <div class="note-item">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>You can only withdraw funds once per approved loan</span>
+                                        </div>
+                                        <div class="note-item">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>Ensure your M-Pesa number is correct and active</span>
+                                        </div>
+                                        <div class="note-item">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>Standard M-Pesa transaction fees apply</span>
+                                        </div>
+                                        <div class="note-item">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>Contact support if you don't receive funds within 10 minutes</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary withdraw-btn">
+                                        <i class="fas fa-paper-plane me-2"></i>
+                                        Confirm Withdrawal to M-Pesa
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Information -->
+                <div class="col-lg-4">
+                    <!-- Processing Info -->
+                    <div class="dashboard-card mb-4">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-clock me-2"></i>
+                                Processing Time
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="processing-steps">
+                                <div class="processing-step active">
+                                    <div class="step-icon">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </div>
+                                    <div class="step-content">
+                                        <strong>Request Sent</strong>
+                                        <span>Immediate</span>
+                                    </div>
+                                </div>
+                                <div class="processing-step">
+                                    <div class="step-icon">
+                                        <i class="fas fa-sync"></i>
+                                    </div>
+                                    <div class="step-content">
+                                        <strong>Processing</strong>
+                                        <span>2-3 minutes</span>
+                                    </div>
+                                </div>
+                                <div class="processing-step">
+                                    <div class="step-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="step-content">
+                                        <strong>Completed</strong>
+                                        <span>5 minutes total</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Support Card -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-headset me-2"></i>
+                                Need Help?
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="support-info">
+                                <div class="support-item">
+                                    <i class="fas fa-phone"></i>
+                                    <div>
+                                        <strong>Call Support</strong>
+                                        <span>+254 700 000 000</span>
+                                    </div>
+                                </div>
+                                <div class="support-item">
+                                    <i class="fas fa-envelope"></i>
+                                    <div>
+                                        <strong>Email Support</strong>
+                                        <span>support@quickloan.com</span>
+                                    </div>
+                                </div>
+                                <div class="support-item">
+                                    <i class="fas fa-comments"></i>
+                                    <div>
+                                        <strong>Live Chat</strong>
+                                        <span>24/7 Available</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Bitget Theme Variables */
+:root {
+    --bg-primary: #0B0E11;
+    --bg-secondary: #1E2026;
+    --bg-tertiary: #2B2F36;
+    --border-color: #474D57;
+    --text-primary: #EAECEF;
+    --text-secondary: #B7BDC6;
+    --text-muted: #848E9C;
+    --accent-green: #00C087;
+    --accent-green-hover: #00A875;
+    --accent-yellow: #F0B90B;
+    --accent-red: #F6465D;
+    --accent-blue: #0095FF;
+}
+
+.withdraw-container {
+    padding: 20px;
+    background: var(--bg-primary);
+    min-height: 100vh;
+}
+
+/* Header Styles */
+.withdraw-header {
+    padding: 20px 0;
+}
+
+.header-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--accent-green);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-primary);
+    font-size: 1.2rem;
+}
+
+.page-title {
+    color: var(--text-primary);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.page-subtitle {
+    color: var(--text-muted);
+    margin: 5px 0 0 0;
+    font-size: 0.9rem;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* Dashboard Card */
+.dashboard-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.card-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-title {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+/* Loan Summary */
+.loan-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.summary-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--accent-green);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-primary);
+}
+
+.summary-content label {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.summary-content strong {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.text-primary {
+    color: var(--accent-green) !important;
+}
+
+/* Form Styles */
+.withdraw-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-section {
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.section-title {
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.form-grid {
+    display: grid;
+    gap: 15px;
+}
+
+.form-group {
+    margin-bottom: 0;
+}
+
+/* Crispy Forms Override */
+.form-group label {
+    color: var(--text-primary) !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.form-control {
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+    border-radius: 8px !important;
+    padding: 12px 15px !important;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    background: var(--bg-secondary) !important;
+    border-color: var(--accent-green) !important;
+    color: var(--text-primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 192, 135, 0.15) !important;
+}
+
+.form-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(0, 149, 255, 0.1);
+    border: 1px solid rgba(0, 149, 255, 0.3);
+    border-radius: 6px;
+    padding: 12px 15px;
+    margin-top: 15px;
+}
+
+.form-info i {
+    color: var(--accent-blue);
+    margin-top: 2px;
+}
+
+.form-info span {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+/* Amount Section */
+.amount-section {
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.amount-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: rgba(0, 192, 135, 0.1);
+    border: 1px solid rgba(0, 192, 135, 0.3);
+    border-radius: 8px;
+}
+
+.amount-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--accent-green);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-primary);
+    font-size: 1.2rem;
+}
+
+.amount-content label {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.amount-value {
+    color: var(--accent-green);
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.amount-content small {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+}
+
+/* Notes Section */
+.notes-section {
+    background: rgba(240, 185, 11, 0.1);
+    border: 1px solid rgba(240, 185, 11, 0.3);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.notes-title {
+    color: var(--accent-yellow);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.notes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.note-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.note-item i {
+    color: var(--accent-yellow);
+    margin-top: 2px;
+    font-size: 0.8rem;
+}
+
+.note-item span {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+/* Form Actions */
+.form-actions {
+    text-align: center;
+    padding-top: 10px;
+}
+
+.withdraw-btn {
+    background: var(--accent-green);
+    border: none;
+    border-radius: 8px;
+    color: var(--bg-primary);
+    font-weight: 600;
+    padding: 15px 30px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+}
+
+.withdraw-btn:hover {
+    background: var(--accent-green-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 192, 135, 0.3);
+    color: var(--bg-primary);
+}
+
+/* Processing Steps */
+.processing-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.processing-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.processing-step.active {
+    background: rgba(0, 192, 135, 0.1);
+    border-color: rgba(0, 192, 135, 0.3);
+}
+
+.step-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+}
+
+.processing-step.active .step-icon {
+    background: var(--accent-green);
+    color: var(--bg-primary);
+}
+
+.step-content {
+    flex: 1;
+}
+
+.step-content strong {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.step-content span {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+/* Support Info */
+.support-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.support-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.support-item:hover {
+    border-color: var(--accent-green);
+    transform: translateX(5px);
+}
+
+.support-item i {
+    width: 32px;
+    height: 32px;
+    background: var(--accent-green);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-primary);
+    font-size: 0.8rem;
+}
+
+.support-item div {
+    flex: 1;
+}
+
+.support-item strong {
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.support-item span {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+}
+
+/* Button Styles */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 10px 20px;
+    border: none;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-primary {
+    background: var(--accent-green);
+    color: var(--bg-primary);
+}
+
+.btn-primary:hover {
+    background: var(--accent-green-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 192, 135, 0.3);
+    color: var(--bg-primary);
+}
+
+.btn-outline {
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    background: transparent;
+}
+
+.btn-outline:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+    transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .withdraw-container {
+        padding: 15px;
+    }
+    
+    .withdraw-header {
+        text-align: center;
+    }
+    
+    .header-actions {
+        justify-content: center;
+        margin-top: 15px;
+    }
+    
+    .loan-summary-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .amount-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+    
+    .withdraw-btn {
+        width: 100%;
+        max-width: none;
+    }
+}
+
+/* Animation for form elements */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dashboard-card {
+    animation: slideInUp 0.6s ease forwards;
+}
+
+.dashboard-card:nth-child(1) { animation-delay: 0.1s; }
+.dashboard-card:nth-child(2) { animation-delay: 0.2s; }
+.dashboard-card:nth-child(3) { animation-delay: 0.3s; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add loading state to withdraw button
+    const withdrawForm = document.querySelector('.withdraw-form');
+    const withdrawButton = document.querySelector('.withdraw-btn');
+    
+    if (withdrawForm && withdrawButton) {
+        withdrawForm.addEventListener('submit', function(e) {
+            withdrawButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing Withdrawal...';
+            withdrawButton.disabled = true;
+            
+            // Re-enable after 5 seconds (in case of error)
+            setTimeout(() => {
+                withdrawButton.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Confirm Withdrawal to M-Pesa';
+                withdrawButton.disabled = false;
+            }, 5000);
+        });
+    }
+
+    // Add phone number formatting
+    const phoneInput = document.querySelector('input[name="mpesa_number"]');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            // Format Kenyan phone numbers
+            if (value.startsWith('254')) {
+                value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4');
+            } else if (value.startsWith('07') || value.startsWith('01')) {
+                value = value.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3');
+            }
+            
+            e.target.value = value;
+        });
+    }
+
+    // Add hover effects to support items
+    const supportItems = document.querySelectorAll('.support-item');
+    supportItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateX(5px)';
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateX(0)';
+        });
+    });
+
+    // Add focus effects to form inputs
+    const formInputs = document.querySelectorAll('.form-control');
+    formInputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('focused');
+        });
+        
+        input.addEventListener('blur', function() {
+            this.parentElement.classList.remove('focused');
+        });
+    });
+});
+</script>
+{% endblock %}

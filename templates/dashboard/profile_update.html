@@ -1,0 +1,592 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if is_update %}Update Profile{% else %}Complete Profile{% endif %} - QuickLoan{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <!-- Header Section -->
+            <div class="text-center mb-5">
+                <div class="mb-4">
+                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                         style="width: 80px; height: 80px;">
+                        <i class="fas {% if is_update %}fa-user-edit{% else %}fa-user-plus{% endif %} fa-2x text-primary"></i>
+                    </div>
+                    <h2 class="text-white mb-2">
+                        {% if is_update %}Update Your Profile{% else %}Complete Your Profile{% endif %}
+                    </h2>
+                    <p class="text-muted mb-0">
+                        {% if is_update %}
+                            Keep your information current for better loan opportunities
+                        {% else %}
+                            Complete your profile to unlock full access to loan services
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <!-- Progress Steps -->
+                <div class="row justify-content-center mb-4">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center justify-content-between position-relative">
+                            <!-- Step 1 -->
+                            <div class="text-center">
+                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2"
+                                     style="width: 40px; height: 40px;">
+                                    <i class="fas fa-user-check text-dark"></i>
+                                </div>
+                                <small class="text-white">Account</small>
+                            </div>
+                            
+                            <!-- Connector -->
+                            <div class="flex-grow-1 mx-3" style="height: 2px; background: var(--primary); opacity: 0.3;"></div>
+                            
+                            <!-- Step 2 -->
+                            <div class="text-center">
+                                <div class="{% if is_update %}bg-primary{% else %}bg-gray-700{% endif %} rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2"
+                                     style="width: 40px; height: 40px;">
+                                    <i class="fas {% if is_update %}fa-check{% else %}fa-edit{% endif %} text-{% if is_update %}dark{% else %}muted{% endif %}"></i>
+                                </div>
+                                <small class="{% if is_update %}text-primary{% else %}text-muted{% endif %}">Profile</small>
+                            </div>
+                            
+                            <!-- Connector -->
+                            <div class="flex-grow-1 mx-3" style="height: 2px; background: var(--gray-700);"></div>
+                            
+                            <!-- Step 3 -->
+                            <div class="text-center">
+                                <div class="bg-gray-700 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2"
+                                     style="width: 40px; height: 40px;">
+                                    <i class="fas fa-rocket text-muted"></i>
+                                </div>
+                                <small class="text-muted">Ready</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 bg-dark-secondary">
+                <div class="card-header bg-transparent border-bottom border-gray-700 py-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h5 class="text-white mb-0">
+                            <i class="fas fa-id-card me-2 text-primary"></i>
+                            Profile Information
+                        </h5>
+                        <span class="badge bg-primary bg-opacity-20 text-primary">
+                            {% if is_update %}Editing{% else %}Step 2 of 3{% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-body p-4">
+                    <!-- Info Alert -->
+                    <div class="alert alert-info border-0 bg-primary bg-opacity-10 border-start border-primary border-4 mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-info-circle text-primary me-3 fs-5"></i>
+                            <div>
+                                <h6 class="text-primary mb-1">
+                                    {% if is_update %}Profile Update Required{% else %}Complete Your Profile{% endif %}
+                                </h6>
+                                <p class="text-muted mb-0 small">
+                                    {% if is_update %}
+                                        Update your profile information to maintain eligibility for loans and better rates.
+                                    {% else %}
+                                        Complete your profile to access personalized loan offers and faster approvals.
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Profile Picture Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <h6 class="text-white mb-0">Profile Picture</h6>
+                                    <label for="id_profile_picture" class="btn btn-outline-primary btn-sm mb-0">
+                                        <i class="fas fa-camera me-1"></i>
+                                        {% if is_update and user.borrowerprofile.has_profile_picture %}Change{% else %}Upload{% endif %}
+                                    </label>
+                                    {{ form.profile_picture }}
+                                </div>
+                                
+                                <div class="d-flex align-items-center">
+                                    <div class="me-4 position-relative">
+                                        {% if is_update and user.borrowerprofile.has_profile_picture %}
+                                            <img src="{{ user.borrowerprofile.profile_picture.url }}" 
+                                                 alt="Profile Picture" 
+                                                 class="rounded-circle shadow profile-picture-preview"
+                                                 style="width: 100px; height: 100px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="rounded-circle bg-gray-700 d-flex align-items-center justify-content-center shadow profile-picture-preview"
+                                                 style="width: 100px; height: 100px;">
+                                                <i class="fas fa-user fa-2x text-muted"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div class="position-absolute bottom-0 end-0">
+                                            <div class="bg-primary rounded-circle p-1 border border-2 border-dark-secondary">
+                                                <i class="fas fa-camera text-dark fs-7"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Optional. Square image recommended, max 2MB. JPG, PNG, GIF supported.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Personal Details -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label class="form-label text-white">
+                                        <i class="fas fa-id-card me-2 text-muted"></i>
+                                        ID Number
+                                    </label>
+                                    {{ form.id_number }}
+                                    {% if form.id_number.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.id_number.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label class="form-label text-white">
+                                        <i class="fas fa-phone me-2 text-muted"></i>
+                                        Phone Number
+                                    </label>
+                                    {{ form.phone_number }}
+                                    {% if form.phone_number.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.phone_number.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label class="form-label text-white">
+                                        <i class="fas fa-birthday-cake me-2 text-muted"></i>
+                                        Date of Birth
+                                    </label>
+                                    {{ form.date_of_birth }}
+                                    {% if form.date_of_birth.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.date_of_birth.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label class="form-label text-white">
+                                        <i class="fas fa-briefcase me-2 text-muted"></i>
+                                        Employment Status
+                                    </label>
+                                    {{ form.employment_status }}
+                                    {% if form.employment_status.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.employment_status.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label class="form-label text-white">
+                                        <i class="fas fa-money-bill-wave me-2 text-muted"></i>
+                                        Monthly Income (KSh)
+                                    </label>
+                                    {{ form.monthly_income }}
+                                    {% if form.monthly_income.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.monthly_income.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label class="form-label text-white">
+                                        <i class="fas fa-building me-2 text-muted"></i>
+                                        Employer Name
+                                    </label>
+                                    {{ form.employer_name }}
+                                    {% if form.employer_name.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.employer_name.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex justify-content-between align-items-center pt-4 mt-4 border-top border-gray-700">
+                            <a href="{% if is_update %}{% url 'profile' %}{% else %}{% url 'dashboard' %}{% endif %}" 
+                               class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Back to {% if is_update %}Profile{% else %}Dashboard{% endif %}
+                            </a>
+                            
+                            <div class="d-flex gap-2">
+                                {% if not is_update %}
+                                <button type="button" class="btn btn-outline-primary" onclick="saveAsDraft()">
+                                    <i class="fas fa-save me-2"></i>
+                                    Save Draft
+                                </button>
+                                {% endif %}
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="fas {% if is_update %}fa-save{% else %}fa-check-circle{% endif %} me-2"></i>
+                                    {% if is_update %}Update Profile{% else %}Complete Profile{% endif %}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Additional Info -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card border-0 bg-dark-secondary">
+                        <div class="card-body">
+                            <h6 class="text-white mb-3">
+                                <i class="fas fa-shield-alt me-2 text-primary"></i>
+                                Data Security
+                            </h6>
+                            <p class="text-muted small mb-0">
+                                Your information is encrypted and protected with bank-level security. 
+                                We never share your data with third parties without your consent.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 bg-dark-secondary">
+                        <div class="card-body">
+                            <h6 class="text-white mb-3">
+                                <i class="fas fa-rocket me-2 text-primary"></i>
+                                Next Steps
+                            </h6>
+                            <p class="text-muted small mb-0">
+                                After completing your profile, you'll be able to apply for loans 
+                                and get personalized offers based on your financial profile.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-dark-secondary {
+    background-color: var(--gray-100) !important;
+}
+
+.bg-gray-700 {
+    background-color: var(--gray-300) !important;
+}
+
+.border-gray-700 {
+    border-color: var(--gray-300) !important;
+}
+
+/* Form Styling */
+.form-control, .form-select {
+    background-color: var(--gray-200);
+    border: 1px solid var(--gray-300);
+    color: var(--gray-900);
+    border-radius: 8px;
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--gray-200);
+    border-color: var(--primary);
+    color: var(--gray-900);
+    box-shadow: 0 0 0 0.2rem rgba(0, 192, 135, 0.15);
+}
+
+.form-label {
+    color: var(--gray-900);
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+/* Profile Picture */
+.profile-picture-preview {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.profile-picture-preview:hover {
+    transform: scale(1.05);
+    border-color: var(--primary);
+    box-shadow: 0 8px 25px rgba(0, 192, 135, 0.3);
+}
+
+/* Hide default file input */
+#id_profile_picture {
+    display: none;
+}
+
+/* Progress Steps */
+.fs-7 {
+    font-size: 0.75rem !important;
+}
+
+/* Button Styling */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, #00A875 100%);
+    color: var(--dark);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #00A875 0%, #009166 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0, 192, 135, 0.4);
+}
+
+.btn-outline-primary {
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    background: transparent;
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary);
+    color: var(--dark);
+    transform: translateY(-1px);
+}
+
+.btn-outline-secondary {
+    border: 1px solid var(--gray-300);
+    color: var(--gray-400);
+    background: transparent;
+}
+
+.btn-outline-secondary:hover {
+    background: var(--gray-300);
+    color: var(--gray-900);
+    transform: translateY(-1px);
+}
+
+/* Alert Styling */
+.alert-info {
+    background: rgba(0, 192, 135, 0.1) !important;
+    border: none !important;
+    border-left: 4px solid var(--primary) !important;
+}
+
+/* Card Styling */
+.card {
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* Badge Styling */
+.badge {
+    border-radius: 6px;
+    font-weight: 600;
+    padding: 6px 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 20px 15px;
+    }
+    
+    .card-body {
+        padding: 20px !important;
+    }
+    
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .d-flex.justify-content-between .d-flex {
+        justify-content: center !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Profile picture preview
+    const profilePictureInput = document.getElementById('id_profile_picture');
+    const profilePicturePreview = document.querySelector('.profile-picture-preview');
+    
+    if (profilePictureInput) {
+        profilePictureInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // Validate file size (2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    showNotification('File size must be less than 2MB', 'error');
+                    this.value = '';
+                    return;
+                }
+                
+                // Validate file type
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                if (!validTypes.includes(file.type)) {
+                    showNotification('Please select a valid image file (JPG, JPEG, PNG, GIF)', 'error');
+                    this.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    if (profilePicturePreview.tagName === 'IMG') {
+                        profilePicturePreview.src = e.target.result;
+                    } else {
+                        // Replace default icon with image
+                        profilePicturePreview.outerHTML = `<img src="${e.target.result}" 
+                                                              alt="Profile Picture" 
+                                                              class="rounded-circle profile-picture-preview shadow"
+                                                              style="width: 100px; height: 100px; object-fit: cover;">`;
+                    }
+                    showNotification('Profile picture updated successfully!', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    // Form submission loading state
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function() {
+            const submitButton = form.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+                submitButton.disabled = true;
+                
+                // Disable other buttons
+                const otherButtons = form.querySelectorAll('button, a.btn');
+                otherButtons.forEach(button => {
+                    if (button !== submitButton) {
+                        button.classList.add('disabled');
+                        button.style.pointerEvents = 'none';
+                        button.style.opacity = '0.6';
+                    }
+                });
+            }
+        });
+    }
+    
+    // Real-time form validation
+    const formControls = document.querySelectorAll('.form-control, .form-select');
+    formControls.forEach(control => {
+        control.addEventListener('invalid', function() {
+            this.classList.add('is-invalid');
+        });
+        
+        control.addEventListener('input', function() {
+            if (this.checkValidity()) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+            }
+        });
+    });
+    
+    // Auto-format phone number
+    const phoneInput = document.querySelector('input[name="phone_number"]');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.startsWith('254')) {
+                value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{3})/, '+$1 $2 $3 $4');
+            } else if (value.startsWith('07') || value.startsWith('01')) {
+                value = value.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3');
+            }
+            e.target.value = value;
+        });
+    }
+    
+    // Format monthly income
+    const incomeInput = document.querySelector('input[name="monthly_income"]');
+    if (incomeInput) {
+        incomeInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value) {
+                value = parseInt(value).toLocaleString();
+                e.target.value = value;
+            }
+        });
+    }
+});
+
+function saveAsDraft() {
+    showNotification('Profile draft saved successfully!', 'success');
+    // In a real implementation, this would save form data to localStorage or send to backend
+}
+
+function showNotification(message, type) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = `
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    `;
+    
+    notification.innerHTML = `
+        <strong>${type === 'success' ? 'Success!' : 'Error!'}</strong> ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}
