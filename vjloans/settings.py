@@ -25,9 +25,14 @@ SECRET_KEY = 'django-insecure-e6+ftz21ojhes+db0d&+ins=n-8^%m)v!%h(3s*^w&nx8hz6v*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'vjloans-1.onrender.com',
+    'localhost',
+    '127.0.0.1',
+]
 
-
+# Or for better flexibility, use environment variables:
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 # Application definition
 
 INSTALLED_APPS = [
